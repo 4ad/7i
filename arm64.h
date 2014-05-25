@@ -250,3 +250,76 @@ enum {
 	Clsppr = 2112,	/* load/store reg-pair (pre-index) */
 	Cundef = 2176	/* undefined instruction */
 };
+
+/* initialize variables in Inst functions */
+#define getcmpb(i) 	sf = (i>>31)&0x1; op = (i>>24)&0x1; imm19 = (i>>5)&0x7ffff; Rt = i&0x1f; 
+#define getcb(i)   	o1 = (i>>24)&0x1; imm19 = (i>>5)&0x7ffff; o0 = (i>>4)&0x1; cond = i&0xf; 
+#define getsys(i)  	L = (i>>21)&0x1; op0 = (i>>19)&0x3; op1 = (i>>16)&0x7; CRn = (i>>12)&0xf; CRm = (i>>8)&0xf; op2 = (i>>5)&0x7; Rt = i&0x1f; 
+#define gettb(i)   	b5 = (i>>31)&0x1; op = (i>>24)&0x1; b40 = (i>>19)&0x1f; imm14 = (i>>5)&0x3fff; Rt = i&0x1f; 
+#define getubi(i)  	op = (i>>31)&0x1; imm26 = i&0x3ffffff; 
+#define getubr(i)  	opc = (i>>21)&0xf; op2 = (i>>16)&0x1f; Rn = (i>>5)&0x1f; 
+#define getai(i)   	sf = (i>>31)&0x1; op = (i>>30)&0x1; S = (i>>29)&0x1; shift = (i>>22)&0x3; imm12 = (i>>10)&0xfff; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define getab(i)   	sf = (i>>31)&0x1; opc = (i>>29)&0x3; N = (i>>22)&0x1; immr = (i>>16)&0x3f; imms = (i>>10)&0x3f; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define getax(i)   	sf = (i>>31)&0x1; op21 = (i>>29)&0x3; N = (i>>22)&0x1; o0 = (i>>21)&0x1; Rm = (i>>16)&0x1f; imms = (i>>10)&0x3f; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define getali(i)  	sf = (i>>31)&0x1; opc = (i>>29)&0x3; N = (i>>22)&0x1; immr = (i>>16)&0x3f; imms = (i>>10)&0x3f; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define getamwi(i) 	sf = (i>>31)&0x1; opc = (i>>29)&0x3; hw = (i>>21)&0x3; imm16 = (i>>5)&0xffff; Rd = i&0x1f; 
+#define getapcr(i) 	op = (i>>31)&0x1; immlo = (i>>29)&0x3; immhi = (i>>5)&0x7ffff; Rd = i&0x1f; 
+#define getar(i)   	sf = (i>>31)&0x1; op = (i>>30)&0x1; S = (i>>29)&0x1; opt = (i>>22)&0x3; Rm = (i>>16)&0x1f; option = (i>>13)&0x7; imm3 = (i>>10)&0x7; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define getasr(i)  	sf = (i>>31)&0x1; op = (i>>30)&0x1; S = (i>>29)&0x1; shift = (i>>22)&0x3; Rm = (i>>16)&0x1f; imm6 = (i>>10)&0x3f; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define getac(i)   	sf = (i>>31)&0x1; op = (i>>30)&0x1; S = (i>>29)&0x1; Rm = (i>>16)&0x1f; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define getaci(i)  	sf = (i>>31)&0x1; op = (i>>30)&0x1; S = (i>>29)&0x1; imm5 = (i>>16)&0x1f; cond = (i>>12)&0xf; Rn = (i>>5)&0x1f; nzcv = i&0xf; 
+#define getacr(i)  	sf = (i>>31)&0x1; op = (i>>30)&0x1; S = (i>>29)&0x1; Rm = (i>>16)&0x1f; cond = (i>>12)&0xf; Rn = (i>>5)&0x1f; nzcv = i&0xf; 
+#define getacs(i)  	sf = (i>>31)&0x1; op = (i>>30)&0x1; S = (i>>29)&0x1; Rm = (i>>16)&0x1f; cond = (i>>12)&0xf; op2 = (i>>10)&0x3; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define geta1(i)   	sf = (i>>31)&0x1; S = (i>>29)&0x1; opcode = (i>>10)&0x7; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define geta2(i)   	sf = (i>>31)&0x1; Rm = (i>>16)&0x1f; opcode = (i>>10)&0x1f; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define geta3(i)   	sf = (i>>31)&0x1; op31 = (i>>21)&0x7; Rm = (i>>16)&0x1f; o0 = (i>>15)&0x1; Ra = (i>>10)&0x1f; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define getalsr(i) 	sf = (i>>31)&0x1; opc = (i>>29)&0x3; shift = (i>>22)&0x3; N = (i>>21)&0x1; Rm = (i>>16)&0x1f; imm6 = (i>>10)&0x3f; Rn = (i>>5)&0x1f; Rd = i&0x1f; 
+#define getlsr(i)  	opc = (i>>30)&0x3; V = (i>>26)&0x1; imm19 = (i>>5)&0x7ffff; Rt = i&0x1f; 
+#define getlsx(i)  	size = (i>>30)&0x3; o2 = (i>>23)&0x1; L = (i>>22)&0x1; o1 = (i>>21)&0x1; Rs = (i>>16)&0x1f; o0 = (i>>15)&0x1; Rt2 = (i>>10)&0x1f; Rn = (i>>5)&0x1f; Rt = i&0x1f; 
+#define getlsnp(i) 	opc = (i>>30)&0x3; V = (i>>26)&0x1; L = (i>>22)&0x1; imm7 = (i>>15)&0x7f; Rt2 = (i>>10)&0x1f; Rn = (i>>5)&0x1f; Rt = i&0x1f; 
+#define getlspos(i)	size = (i>>30)&0x3; V = (i>>26)&0x1; opc = (i>>22)&0x3; imm9 = (i>>12)&0x1ff; Rn = (i>>5)&0x1f; Rt = i&0x1f; 
+#define getlspre(i)	size = (i>>30)&0x3; V = (i>>26)&0x1; opc = (i>>22)&0x3; imm9 = (i>>12)&0x1ff; Rn = (i>>5)&0x1f; Rt = i&0x1f; 
+#define getlso(i)  	size = (i>>30)&0x3; V = (i>>26)&0x1; opc = (i>>22)&0x3; Rm = (i>>16)&0x1f; option = (i>>13)&0x7; S = (i>>12)&0x1; Rn = (i>>5)&0x1f; Rt = i&0x1f; 
+#define getlsu(i)  	size = (i>>30)&0x3; V = (i>>26)&0x1; opc = (i>>22)&0x3; imm9 = (i>>12)&0x1ff; Rn = (i>>5)&0x1f; Rt = i&0x1f; 
+#define getlsuci(i)	size = (i>>30)&0x3; V = (i>>26)&0x1; opc = (i>>22)&0x3; imm9 = (i>>12)&0x1ff; Rn = (i>>5)&0x1f; Rt = i&0x1f; 
+#define getlsusi(i)	size = (i>>30)&0x3; V = (i>>26)&0x1; opc = (i>>22)&0x3; imm12 = (i>>10)&0xfff; Rn = (i>>5)&0x1f; Rt = i&0x1f; 
+#define getlsrpo(i)	opc = (i>>30)&0x3; V = (i>>26)&0x1; L = (i>>22)&0x1; imm7 = (i>>15)&0x7f; Rt2 = (i>>10)&0x1f; Rn = (i>>5)&0x1f; Rt = i&0x1f; 
+#define getlsppo(i)	opc = (i>>30)&0x3; V = (i>>26)&0x1; L = (i>>22)&0x1; imm7 = (i>>15)&0x7f; Rt2 = (i>>10)&0x1f; Rn = (i>>5)&0x1f; Rt = i&0x1f; 
+#define getlsppr(i)	opc = (i>>30)&0x3; V = (i>>26)&0x1; L = (i>>22)&0x1; imm7 = (i>>15)&0x7f; Rt2 = (i>>10)&0x1f; Rn = (i>>5)&0x1f; Rt = i&0x1f; 
+
+/* extract a particular's class opcode; to be OR-ed with the instruction
+class to get the super-opcode (xo) */
+#define opcmpb(i) 	((i>>24)&0x1|(((i>>31)&0x1)<<1))
+#define opcb(i)   	((i>>4)&0x1)
+#define opsys(i)  	((i>>19)&0x3|(((i>>21)&0x1)<<2))
+#define optb(i)   	((i>>24)&0x1)
+#define opubi(i)  	((i>>31)&0x1)
+#define opubr(i)  	((i>>16)&0x1f|(((i>>21)&0xf)<<5))
+#define opai(i)   	((i>>29)&0x1|(((i>>30)&0x1)<<1)|(((i>>31)&0x1)<<2))
+#define opab(i)   	((i>>22)&0x1|(((i>>29)&0x3)<<1)|(((i>>31)&0x1)<<3))
+#define opax(i)   	((i>>21)&0x1|(((i>>22)&0x1)<<1)|(((i>>29)&0x3)<<2)|(((i>>31)&0x1)<<4))
+#define opali(i)  	((i>>29)&0x3|(((i>>31)&0x1)<<2))
+#define opamwi(i) 	((i>>29)&0x3|(((i>>31)&0x1)<<2))
+#define opapcr(i) 	((i>>29)&0x3|(((i>>31)&0x1)<<2))
+#define opar(i)   	((i>>22)&0x3|(((i>>29)&0x1)<<2)|(((i>>30)&0x1)<<3)|(((i>>31)&0x1)<<4))
+#define opasr(i)  	((i>>22)&0x3|(((i>>29)&0x1)<<2)|(((i>>30)&0x1)<<3)|(((i>>31)&0x1)<<4))
+#define opac(i)   	((i>>29)&0x1|(((i>>30)&0x1)<<1)|(((i>>31)&0x1)<<2))
+#define opaci(i)  	((i>>29)&0x1|(((i>>30)&0x1)<<1)|(((i>>31)&0x1)<<2))
+#define opacr(i)  	((i>>29)&0x1|(((i>>30)&0x1)<<1)|(((i>>31)&0x1)<<2))
+#define opacs(i)  	((i>>10)&0x3|(((i>>29)&0x1)<<2)|(((i>>30)&0x1)<<3)|(((i>>31)&0x1)<<4))
+#define opa1(i)   	((i>>10)&0x7|(((i>>29)&0x1)<<3)|(((i>>31)&0x1)<<4))
+#define opa2(i)   	((i>>10)&0x1f|(((i>>31)&0x1)<<5))
+#define opa3(i)   	((i>>15)&0x1|(((i>>21)&0x7)<<1)|(((i>>31)&0x1)<<4))
+#define opalsr(i) 	((i>>21)&0x1|(((i>>29)&0x3)<<1)|(((i>>31)&0x1)<<3))
+#define oplsr(i)  	((i>>26)&0x1|(((i>>30)&0x3)<<1))
+#define oplsx(i)  	((i>>15)&0x1|(((i>>21)&0x1)<<1)|(((i>>22)&0x1)<<2)|(((i>>23)&0x1)<<3)|(((i>>30)&0x3)<<4))
+#define oplsnp(i) 	((i>>22)&0x1|(((i>>26)&0x1)<<1)|(((i>>30)&0x3)<<2))
+#define oplspos(i)	((i>>22)&0x3|(((i>>26)&0x1)<<2)|(((i>>30)&0x3)<<3))
+#define oplspre(i)	((i>>22)&0x3|(((i>>26)&0x1)<<2)|(((i>>30)&0x3)<<3))
+#define oplso(i)  	((i>>22)&0x3|(((i>>26)&0x1)<<2)|(((i>>30)&0x3)<<3))
+#define oplsu(i)  	((i>>22)&0x3|(((i>>26)&0x1)<<2)|(((i>>30)&0x3)<<3))
+#define oplsuci(i)	((i>>22)&0x3|(((i>>26)&0x1)<<2)|(((i>>30)&0x3)<<3))
+#define oplsusi(i)	((i>>22)&0x3|(((i>>26)&0x1)<<2)|(((i>>30)&0x3)<<3))
+#define oplsrpo(i)	((i>>22)&0x1|(((i>>26)&0x1)<<1)|(((i>>30)&0x3)<<2))
+#define oplsppo(i)	((i>>22)&0x1|(((i>>26)&0x1)<<1)|(((i>>30)&0x3)<<2))
+#define oplsppr(i)	((i>>22)&0x1|(((i>>26)&0x1)<<1)|(((i>>30)&0x3)<<2))
