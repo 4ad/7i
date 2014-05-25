@@ -1,3 +1,4 @@
 syntax: regexp
 ^.*\.out$
 ^.*\.[125678vqki]$
+^acid.def
