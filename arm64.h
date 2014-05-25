@@ -251,7 +251,7 @@ enum {
 /* initialize variables in Inst functions */
 #define getcmpb(i) 	sf = (i>>31)&0x1; op = (i>>24)&0x1; imm19 = (i>>5)&0x7ffff; Rt = i&0x1f; 
 #define getcb(i)   	o1 = (i>>24)&0x1; imm19 = (i>>5)&0x7ffff; o0 = (i>>4)&0x1; cond = i&0xf; 
-#define getsys(i)  	L = (i>>21)&0x1; op0 = (i>>19)&0x3; op1 = (i>>16)&0x7; CRn = (i>>12)&0xf; CRm = (i>>8)&0xf; op2 = (i>>5)&0x7; Rt = i&0x1f; 
+#define getsys(i)  	opc = (i>>21)&0x7; imm16 = (i>>5)&0xffff; LL = i&0x3; 
 #define gettb(i)   	b5 = (i>>31)&0x1; op = (i>>24)&0x1; b40 = (i>>19)&0x1f; imm14 = (i>>5)&0x3fff; Rt = i&0x1f; 
 #define getubi(i)  	op = (i>>31)&0x1; imm26 = i&0x3ffffff; 
 #define getubr(i)  	opc = (i>>21)&0xf; op2 = (i>>16)&0x1f; Rn = (i>>5)&0x1f; 
@@ -288,7 +288,7 @@ enum {
 class to get the super-opcode (xo) */
 #define opcmpb(i) 	((i>>24)&0x1|(((i>>31)&0x1)<<1))
 #define opcb(i)   	((i>>4)&0x1)
-#define opsys(i)  	((i>>19)&0x3|(((i>>21)&0x1)<<2))
+#define opsys(i)  	(i&0x3|(((i>>21)&0x7)<<2))
 #define optb(i)   	((i>>24)&0x1)
 #define opubi(i)  	((i>>31)&0x1)
 #define opubr(i)  	((i>>16)&0x1f|(((i>>21)&0xf)<<5))

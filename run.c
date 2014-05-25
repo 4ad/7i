@@ -52,7 +52,7 @@ Inst itab[] =
 	[Ccb+ 0]	{condb, "B.cond",	Ibranch}, /* 64 */
 
 	/* system */
-	[Csys+ 1]	{syscall, "SYS",   	Isyscall}, /* 129 */
+	[Csys+ 1]	{syscall, "SVC",   	Isyscall}, /* 129 */
 
 	/* test and branch */
 	[Ctb+ 0]	{tb, "TBZ",   	Ibranch}, /* 192 */
@@ -410,7 +410,7 @@ select a particular instruction from a particular instruction class.
 
 •011|010•|....|....|....|....|....|.... cmpb  compare and branch
 0101|010.|....|....|....|....|...•|.... cb    conditional branch
-1101|0101|00••|•...|....|....|....|.... sys   system
+1101|0100|•••.|....|....|....|....|..•• sys   system
 .011|011•|....|....|....|....|....|.... tb    test and branch
 •001|01..|....|....|....|....|....|.... ubi   unconditional branch imm
 1101|011•|••••|••••|....|....|....|.... ubr   unconditional branch reg
@@ -452,7 +452,7 @@ getxo(ulong ir)
 	// data processing (imm).
 	ulong b2824, b2823;
 	// branches, exceptions, syscalls.
-	ulong b3026, b3025, b3125, b3124, b3122;
+	ulong b3026, b3025, b3125, b3124;
 	// loads and stores.
 	ulong b2927, b2924, b2524, b2523, b21, b1110;
 	// data processing (reg).
@@ -468,7 +468,6 @@ getxo(ulong ir)
 	b3025 = (ir>>25)&0x3F;
 	b3125 = (ir>>25)&0x7F;
 	b3124 = (ir>>24)&0xFF;
-	b3122 = (ir>>24)&0x3FF;
 	b2927 = (ir>>27)&7;
 	b2924 = (ir>>24)&0x3F;
 	b2524 = (ir>>24)&3;
@@ -513,9 +512,7 @@ getxo(ulong ir)
 		case 0x6B:	// unconditional branch reg
 			return Cubr | opubr(ir);
 		}
-		if(b3124 == 0xD4)	// exception generation
-			return Cundef;
-		if(b3122 == 0x354)	// system
+		if(b3124 == 0xD4)	// system
 			return Csys | opsys(ir);
 		return Cundef;
 	}
@@ -637,17 +634,17 @@ condb(ulong ir)
 }
 
 /* system
-params: op1<18,16> CRn<15,12> CRm<11,8> op2<7,5> Rt<4,0> 
-ops: L<21> op0<20,19> 
-	SYS   	L=0	op0=1	
+params: imm16<20,5> 
+ops: opc<23,21> LL<1,0> 
+	SVC   	opc=0	LL=1	
 */
 void
 syscall(ulong ir)
 {
-	ulong L, op0, op1, CRn, CRm, op2, Rt;
+	ulong opc, imm16, LL;
 
 	getsys(ir);
-	USED(L, op0, op1, CRn, CRm, op2, Rt);
+	USED(opc, imm16, LL);
 }
 
 /* test and branch
