@@ -8,7 +8,7 @@
 #define	prof profqi
 #define Percent(num, max)	(int)(((vlong)(num)*100)/(max))
 
-Inset *tables[] = { &ops0, &ops19, &ops31, &ops59, &ops63a, &ops63b, 0 };
+Inset *tables[] = { 0 };
 
 void
 isum(void)
