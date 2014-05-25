@@ -381,7 +381,7 @@ run(void)
 {
 	do {
 		reg.ir = ifetch(reg.pc);
-		ci = nil;
+		ci = &itab[getxo(reg.ir)];
 		if(ci && ci->func){
 			ci->count++;
 			(*ci->func)(reg.ir);
