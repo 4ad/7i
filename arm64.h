@@ -212,20 +212,6 @@ extern		ulong bits[];
 #define NOP		0x80300000
 #define SIGNBIT		0x80000000
 
-
-enum {
-	CRLT = 1<<31,
-	CRGT = 1<<30,
-	CREQ = 1<<29,
-	CRSO = 1<<28,
-	CRFU = CRSO,
-
-	CRFX = 1<<27,
-	CRFEX = 1<<26,
-	CRVX = 1<<25,
-	CROX = 1<<24,
-};
-
 #define getCR(x,w) (((w)>>(28-(x*4)))&0xF)
 #define mkCR(x,v) (((v)&0xF)<<(28-(x*4)))
 
