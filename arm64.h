@@ -209,54 +209,6 @@ extern		ulong bits[];
 #define STACKSIZE	(4*1024*1024)
 
 #define PROFGRAN	4
-#define NOP		0x80300000
-#define SIGNBIT		0x80000000
 
-#define getCR(x,w) (((w)>>(28-(x*4)))&0xF)
-#define mkCR(x,v) (((v)&0xF)<<(28-(x*4)))
-
-#define simm(xx, ii)	xx = (short)(ii&0xFFFF);
-#define uimm(xx, ii)	xx = ii&0xFFFF;
-#define imms(xx, ii) xx = ii<<16;
-#define getairr(i)	rd = (i>>21)&0x1f; ra = (i>>16)&0x1f; simm(imm,i)
-#define getarrr(i)	rd = (i>>21)&0x1f; ra = (i>>16)&0x1f; rb = (i>>11)&0x1f;
-#define getbobi(i)	bo = (i>>21)&0x1f; bi = (i>>16)&0x1f; xx = (i>>11)&0x1f;
-#define getlirr(i)	rs = (i>>21)&0x1f; ra = (i>>16)&0x1f; uimm(imm,i)
-#define getlrrr(i)	rs = (i>>21)&0x1f; ra = (i>>16)&0x1f; rb = (i>>11)&0x1f;
-
-#define OP(o,xo) ((o<<26)|(xo<<1))	/* build an operation */
-#define xop(a,b) ((b<<6)|a)	/* compact form for use in a decoding switch on op/xo */
 #define getop(i) ((i>>26)&0x3F)
 #define getxo(i) ((i>>1)&0x3FF)
-
-#define	FPS_FX	(1<<31)	/* exception summary (sticky) */
-#define	FPS_EX	(1<<30)	/* enabled exception summary */
-#define	FPS_VX	(1<<29)	/* invalid operation exception summary */
-#define	FPS_OX	(1<<28)	/* overflow exception OX (sticky) */
-#define	FPS_UX	(1<<27)	/* underflow exception UX (sticky) */
-#define	FPS_ZX	(1<<26)	/* zero divide exception ZX (sticky) */
-#define	FPS_XX	(1<<25)	/* inexact exception XX (sticky) */
-#define	FPS_VXSNAN (1<<24)	/* invalid operation exception for SNaN (sticky) */
-#define	FPS_VXISI	(1<<23)	/* invalid operation exception for ∞-∞ (sticky) */
-#define	FPS_VXIDI	(1<<22)	/* invalid operation exception for ∞/∞ (sticky) */
-#define	FPS_VXZDZ (1<<21)	/* invalid operation exception for 0/0 (sticky) */
-#define	FPS_VXIMZ	(1<<20)	/* invalid operation exception for ∞*0 (sticky) */
-#define	FPS_VXVC	(1<<19)	/* invalid operation exception for invalid compare (sticky) */
-#define	FPS_FR	(1<<18)	/* fraction rounded */
-#define	FPS_FI	(1<<17)	/* fraction inexact */
-#define	FPS_FPRF	(1<<16)	/* floating point result class */
-#define	FPS_FPCC	(0xF<<12)	/* <, >, =, unordered */
-#define	FPS_VXCVI	(1<<8)	/* enable exception for invalid integer convert (sticky) */
-#define	FPS_VE	(1<<7)	/* invalid operation exception enable */
-#define	FPS_OE	(1<<6)	/* enable overflow exceptions */
-#define	FPS_UE	(1<<5)	/* enable underflow */
-#define	FPS_ZE	(1<<4)	/* enable zero divide */
-#define	FPS_XE	(1<<3)	/* enable inexact exceptions */
-#define	FPS_RN	(3<<0)	/* rounding mode */
-
-#define	XER_SO	(1<<31)
-#define	XER_OV	(1<<30)
-#define	XER_CA	(1<<29)
-
-#define	Rc	1
-#define	OE	0x400
