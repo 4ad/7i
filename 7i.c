@@ -6,7 +6,7 @@
 #define Extern
 #include "arm64.h"
 
-char	*file = "q.out";
+char	*file = "7.out";
 int	datasize;
 ulong	textbase;
 Biobuf	bp, bi;
