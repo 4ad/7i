@@ -405,10 +405,7 @@ ilock(int)
 void
 undef(ulong ir)
 {
-/*	Bprint(bioout, "op=%d op2=%d op3=%d\n", ir>>30, (ir>>21)&0x7, (ir>>19)&0x3f); */
-	Bprint(bioout, "illegal_instruction IR #%.8lux (op=%ld/%ld, pc=#%.8lux)\n", ir, getop(ir), getxo(ir), reg.pc);
-	if(ci && ci->name && ci->func==0)
-		Bprint(bioout, "(%s not yet implemented)\n", ci->name);
+//	Bprint(bioout, "undefined instruction IR #%.8lux (xo=%d, pc=#%.8lux)\n", ir, getxo(ir), reg.pc);
 	longjmp(errjmp, 0);
 }
 

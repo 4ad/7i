@@ -208,9 +208,6 @@ extern		ulong bits[];
 
 #define PROFGRAN	4
 
-#define getop(i) ((i>>26)&0x3F)
-#define getxo(i) ((i>>1)&0x3FF)
-
 /* instruction classes: iota << 6. */
 enum {
 	Ccmpb  =    0,	/* compare and branch */
