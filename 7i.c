@@ -297,10 +297,10 @@ initstk(int argc, char *argv[])
 
 	/*
 	 * pid is second word from end of tos and needs to be set for nsec().
-	 * we know power is a 32-bit cpu, so we'll assume knowledge of the Tos
+	 * we know arm64 is a 64-bit cpu, so we'll assume knowledge of the Tos
 	 * struct for now, and use our pid.
 	 */
-	putmem_w(tos + 4*4 + 2*sizeof(ulong) + 3*sizeof(uvlong), getpid());
+	putmem_w(tos + 4*8 + 2*sizeof(ulong) + 3*sizeof(uvlong), getpid());
 
 	/* Build exec stack */
 	size = strlen(file)+1+BY2WD+BY2WD+(BY2WD*2);	
