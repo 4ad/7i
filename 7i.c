@@ -52,23 +52,16 @@ main(int argc, char **argv)
 	cmd();
 }
 
-/*
- * we're rounding segment boundaries to the nearest 1MB on power now,
- * and mach->pgsize is actually what to round segment boundaries up to.
- */
-#define SEGROUND mach->pgsize
-
 void
 initmap(void)
 {
-
 	ulong t, d, b, bssend;
 	Segment *s;
 
-	t = (fhdr.txtaddr+fhdr.txtsz+(SEGROUND-1)) & ~(SEGROUND-1);
-	d = (t + fhdr.datsz + (SEGROUND-1)) & ~(SEGROUND-1);
+	t = (fhdr.txtaddr+fhdr.txtsz+(BY2PG-1)) & ~(BY2PG-1);
+	d = (t + fhdr.datsz + (BY2PG-1)) & ~(BY2PG-1);
 	bssend = t + fhdr.datsz + fhdr.bsssz;
-	b = (bssend + (SEGROUND-1)) & ~(SEGROUND-1);
+	b = (bssend + (BY2PG-1)) & ~(BY2PG-1);
 
 	s = &memory.seg[Text];
 	s->type = Text;
@@ -78,8 +71,7 @@ initmap(void)
 	s->fileend = s->fileoff + fhdr.txtsz;
 	s->table = emalloc(((s->end-s->base)/BY2PG)*sizeof(uchar*));
 
-	iprofsize = (s->end-s->base)/PROFGRAN;
-	iprof = emalloc(iprofsize*sizeof(long));
+	iprof = emalloc(((s->end-s->base)/PROFGRAN)*sizeof(long));
 	textbase = s->base;
 
 	s = &memory.seg[Data];
