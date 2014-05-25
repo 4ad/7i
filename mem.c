@@ -201,7 +201,7 @@ memio(char *mb, ulong mem, int size, int dir)
 	case MemReadstring:
 		for(;;) {
 			if(size-- == 0) {
-				Bprint(bioout, "memio: user/kernel copy too long for qi\n");
+				Bprint(bioout, "memio: user/kernel copy too long for 7i\n");
 				longjmp(errjmp, 0);
 			}
 			c = getmem_b(mem++);

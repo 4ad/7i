@@ -410,7 +410,7 @@ pfmt(char fmt, int mem, ulong val)
 		break;
 		// inc = machdata->das(symmap, dot, fmt, str, sizeof(str));
 		// if (inc < 0) {
-		// 	Bprint(bioout, "qi: %r\n");
+		// 	Bprint(bioout, "7i: %r\n");
 		// 	return 0;
 		// }
 		// c = Bprint(bioout, "\t%s", str);
@@ -517,7 +517,7 @@ catcher(void *a, char *msg)
 		noted(NDFLT);
 
 	count = 1;
-	print("qi\n");
+	print("7i\n");
 	noted(NCONT);
 }
 

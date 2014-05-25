@@ -41,7 +41,7 @@ main(int argc, char **argv)
 	if(text < 0)
 		fatal(1, "open text '%s'", file);
 
-	Bprint(bioout, "qi\n");
+	Bprint(bioout, "7i\n");
 	inithdr(text);
 	initstk(argc, argv);
 
@@ -247,7 +247,7 @@ procinit(int pid)
 	vastart = reg.r[1] & ~(BY2PG-1);
 	seginit(m, s, (vastart-s->base)/BY2PG, vastart, STACKTOP);
 	close(m);
-	Bprint(bioout, "qi\n"); 
+	Bprint(bioout, "7i\n"); 
 }
 
 void
@@ -341,9 +341,9 @@ fatal(int syserr, char *fmt, ...)
 	va_start(ap, fmt);
 	vseprint(buf, buf+sizeof(buf), fmt, ap);
 	va_end(ap);
-	s = "qi: %s\n";
+	s = "7i: %s\n";
 	if(syserr)
-		s = "qi: %s: %r\n";
+		s = "7i: %s: %r\n";
 	fprint(2, s, buf);
 	exits(buf);
 }
