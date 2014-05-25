@@ -499,7 +499,7 @@ getxo(ulong ir)
 		}
 		return Cundef;
 	case 5:	// branches, exceptions, syscalls
-		if(b3026 == 7)	// unconditional branch imm
+		if(b3026 == 5)	// unconditional branch imm
 			return Cubi | opubi(ir);
 		switch(b3025) {
 		case 0x1A:	// compare and branch
