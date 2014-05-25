@@ -16,7 +16,7 @@ isum(void)
 	Inst *i;
 	int pct, j, k;
 	int total, loads, stores, arith, branch;
-	int taken, powerreg, syscall, realarith, control;
+	int taken, arm64reg, syscall, realarith, control;
 
 	total = 0;
 	loads = 0;
@@ -24,7 +24,7 @@ isum(void)
 	arith = 0;
 	branch = 0;
 	taken = 0;
-	powerreg = 0;
+	arm64reg = 0;
 	syscall = 0;
 	realarith = 0;
 	control = 0;
@@ -71,7 +71,7 @@ isum(void)
 					taken += i->taken;
 					break;
 				case Ireg:
-					powerreg += i->count;
+					arm64reg += i->count;
 					break;
 				case Isyscall:
 					syscall += i->count;
@@ -115,10 +115,10 @@ isum(void)
 	Bprint(bioout, "%-8ud %3d%% Floating point\n",
 					realarith, Percent(realarith, total));
 
-	Bprint(bioout, "%-8ud %3d%% PowerPC special register load/stores\n",
-					powerreg, Percent(powerreg, total));
+	Bprint(bioout, "%-8ud %3d%% Arm64 special register load/stores\n",
+					arm64reg, Percent(arm64reg, total));
 
-	Bprint(bioout, "%-8ud %3d%% PowerPC control instructions\n",
+	Bprint(bioout, "%-8ud %3d%% Arm64 control instructions\n",
 					control, Percent(control, total));
 
 	Bprint(bioout, "%-8ud %3d%% System calls\n", syscall, Percent(syscall, total));
