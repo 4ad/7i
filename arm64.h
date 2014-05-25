@@ -144,6 +144,7 @@ void		putmem_b(ulong, uchar);
 uvlong	getmem_v(ulong);
 ulong		getmem_4(ulong);
 ulong		getmem_2(ulong);
+ulong	getxo(ulong);
 void	putmem_v(ulong, uvlong);
 void		putmem_h(ulong, short);
 void		isum(void);

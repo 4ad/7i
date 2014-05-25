@@ -397,6 +397,200 @@ run(void)
 	}while(--count);
 }
 
+/* Font
+getxo returns the "super-opcode" (xo) of an instruction. The xo is
+the bitwise OR between the class opcode (see file.c:/^classes) and
+the number constructed from the class-select bits (the bullets in
+the table below). The xo can index the itab table.
+
+Instruction encoding table, per class. Bullets represent bits which
+select a particular instruction from a particular instruction class.
+
+•011|010•|....|....|....|....|....|.... cmpb  compare and branch
+0101|010.|....|....|....|....|...•|.... cb    conditional branch
+1101|0101|00••|•...|....|....|....|.... sys   system
+.011|011•|....|....|....|....|....|.... tb    test and branch
+•001|01..|....|....|....|....|....|.... ubi   unconditional branch imm
+1101|011•|••••|••••|....|....|....|.... ubr   unconditional branch reg
+•••1|0001|....|....|....|....|....|.... ai    add/sub imm
+•••1|0011|0•..|....|....|....|....|.... ab    bitfield
+•••1|0011|1••.|....|....|....|....|.... ax    extract
+•••1|0010|0...|....|....|....|....|.... ali   logic imm
+•••1|0010|1...|....|....|....|....|.... amwi  move wide imm
+•••1|0000|....|....|....|....|....|.... apcr  PC-rel addr
+•••0|1011|••1.|....|....|....|....|.... ar    add/sub reg
+•••0|1011|••0.|....|....|....|....|.... asr   add/sub shift-reg
+•••1|1010|000.|....|....|....|....|.... ac    add/sub carry
+•••1|1010|010.|....|....|1...|....|.... aci   cond compare imm
+•••1|1010|010.|....|....|0...|....|.... acr   cond compare reg
+•••1|1010|100.|....|....|••..|....|.... acs   cond select
+•1•1|1010|110.|....|...•|••..|....|.... a1    data proc 1 src
+•0.1|1010|110.|....|.•••|••..|....|.... a2    data proc 2 src
+•..1|1011|•••.|....|•...|....|....|.... a3    data proc 3 src
+•••0|1010|..•.|....|....|....|....|.... alsr  logic shift-reg
+••01|1•00|....|....|....|....|....|.... lsr   load/store reg
+••00|1000|•••.|....|•...|....|....|.... lsx   load/store ex
+••10|1•00|0•..|....|....|....|....|.... lsnp  load/store no-alloc pair (off)
+••11|1•00|••0.|....|....|01..|....|.... lspos load/store reg (imm post-index)
+••11|1•00|••0.|....|....|11..|....|.... lspre load/store reg (imm pre-index)
+••11|1•00|••1.|....|....|10..|....|.... lso   load/store reg (off)
+••11|1•00|••0.|....|....|10..|....|.... lsu   load/store reg (unpriv)
+••11|1•00|••1.|....|....|00..|....|.... lsuci load/store reg (unscaled imm)
+••11|1•01|••..|....|....|....|....|.... lsusi load/store reg (unsigned imm)
+••10|1•01|0•..|....|....|....|....|.... lsrpo load/store reg-pair (off)
+••10|1•00|1•..|....|....|....|....|.... lsppo load/store reg-pair (post-index)
+••10|1•01|1•..|....|....|....|....|.... lsppr load/store reg-pair (pre-index)
+
+*/
+ulong
+getxo(ulong ir)
+{
+	// high-level dispatch.
+	ulong b2826, b27, b25, b2725;
+	// data processing (imm).
+	ulong b2824, b2823;
+	// branches, exceptions, syscalls.
+	ulong b3026, b3025, b3125, b3124, b3122;
+	// loads and stores.
+	ulong b2927, b2924, b2524, b2523, b21, b1110;
+	// data processing (reg).
+	ulong b30, b2321, b11;	// +b2824, +b21
+
+	b2826 = (ir>>26)&7;
+	b27 = (ir>>27)&1;
+	b25 = (ir>>25)&1;
+	b2725 = (ir>>25)&7;
+	b2824 = (ir>>24)&0x1F;
+	b2823 = (ir>>23)&0x3F;
+	b3026 = (ir>>26)&0x1F;
+	b3025 = (ir>>25)&0x3F;
+	b3125 = (ir>>25)&0x7F;
+	b3124 = (ir>>24)&0xFF;
+	b3122 = (ir>>24)&0x3FF;
+	b2927 = (ir>>27)&7;
+	b2924 = (ir>>24)&0x3F;
+	b2524 = (ir>>24)&3;
+	b2523 = (ir>>23)&7;
+	b21 = (ir>>21)&1;
+	b1110 = (ir>>10)&3;
+	b30 = (ir>>30)&1;
+	b2321 = (ir>>21)&7;
+	b11 = (ir>>11)&1;
+
+	switch(b2826) {
+	case 4:	// data processing (imm)
+		switch(b2824) {
+		case 0x10:	// PC-rel addr
+			return Capcr | opapcr(ir);
+		case 0x11:	// add/sub imm
+			return Cai | opai(ir);
+		}
+		switch(b2823) {
+		case 0x24:	// logic imm
+			return Cali | opali(ir);
+		case 0x25:	// move wide imm
+			return Camwi | opamwi(ir);
+		case 0x26:	// bitfield
+			return Cab | opab(ir);
+		case 0x27:	// extract
+			return Cax | opax(ir);
+		}
+		return Cundef;
+	case 5:	// branches, exceptions, syscalls
+		if(b3026 == 7)	// unconditional branch imm
+			return Cubi | opubi(ir);
+		switch(b3025) {
+		case 0x1A:	// compare and branch
+			return Ccmpb | opcmpb(ir);
+		case 0x1B:	// test and branch
+			return Ctb | optb(ir);
+		}
+		switch(b3125) {
+		case 0x2A:	// conditional branch
+			return Ccb | opcb(ir);
+		case 0x6B:	// unconditional branch reg
+			return Cubr | opubr(ir);
+		}
+		if(b3124 == 0xD4)	// exception generation
+			return Cundef;
+		if(b3122 == 0x354)	// system
+			return Csys | opsys(ir);
+		return Cundef;
+	}
+	if(b27 == 1 && b25 == 0) {	// loads and stores
+		if(b2924 == 8)	// load/store ex
+			return Clsx | oplsx(ir);
+		if (b2927 == 3 && b2524 == 0)	// load/store reg
+			return Clsr | oplsr(ir);
+		switch(b2927) {
+		case 5:	// lsnp, lsrpo, lsppo, lsppr
+			switch(b2523) {
+			case 0:	// load/store no-alloc pair (off)
+				return Clsnp | oplsnp(ir);
+			case 1:	// load/store reg-pair (post-index)
+				return Clsppo | oplsppo(ir);
+			case 2:	// load/store reg-pair (off)
+				return Clsrpo | oplsrpo(ir);
+			case 3:	// load/store reg-pair (pre-index)
+				return Clsppr | oplsppr(ir);
+			}
+			return Cundef;
+		case 7:	// lspos, lspre, lso, lsu, lsuci, lsusi
+			if(b2524 == 1)	// load/store reg (unsigned imm)
+				return Clsusi | oplsusi(ir);
+			else if(b2524 == 0) {
+				if(b21 == 1) {
+					if(b1110 == 2)	// load/store reg (off)
+						return Clso | oplso(ir);
+					return Cundef;
+				}
+				switch(b1110) {
+				case 0:	// load/store reg (unscaled imm)
+					return Clsuci | oplsuci(ir);
+				case 1:	// load/store reg (imm post-index)
+					return Clspos | oplspos(ir);
+				case 2:	// load/store reg (unpriv)
+					return Clsu | oplsu(ir);
+				case 3:	// load/store reg (imm pre-index)
+					return Clspre | oplspre(ir);
+				}
+			}
+			return Cundef;
+		}
+		return Cundef;
+	}
+	if(b2725 == 5) {	// data processing (reg)
+		switch(b2824) {
+		case 0xA:	// logic shift-reg
+			return Calsr | opalsr(ir);
+		case 0xB:	// ar, asr
+			if(b21 == 1)	// add/sub extended reg
+				return Car | opar(ir);
+			return Casr | opasr(ir);	// add/sub shift-reg
+		case 0x1A:	// ac, aci, acr, acs, a1, a2
+			switch(b2321) {
+			case 0:	// add/sub carry
+				return Cac | opac(ir);
+			case 2:	// aci, acr
+				if(b11 == 1)	// cond compare imm
+					return Caci | opaci(ir);
+				return Cacr | opacr(ir);	// cond compare reg
+			case 4:	// cond select
+				return Cacs | opacs(ir);
+			case 6:	// a1, a2
+				if(b30 == 1) // data proc 1 src
+					return Ca1 | opa1(ir);
+				return Ca2 | opa2(ir);	// data proc 2 src
+			}
+			return Cundef;
+		case 0x1B:	// a3    data proc 3 src
+			return Ca3 | opa3(ir);
+		}
+		return Cundef;
+	}
+	return Cundef;
+}
+
 void
 ilock(int)
 {
@@ -405,7 +599,7 @@ ilock(int)
 void
 undef(ulong ir)
 {
-//	Bprint(bioout, "undefined instruction IR #%.8lux (xo=%d, pc=#%.8lux)\n", ir, getxo(ir), reg.pc);
+	Bprint(bioout, "undefined instruction IR #%.8lux (xo=%lud, pc=#%.8lux)\n", ir, getxo(ir), reg.pc);
 	longjmp(errjmp, 0);
 }
 
