@@ -5,6 +5,41 @@
 #define Extern extern
 #include "arm64.h"
 
+void	cmpb(ulong);
+void	condb(ulong);
+void	syscall(ulong);
+void	tb(ulong);
+void	uncondbimm(ulong);
+void	uncondbreg(ulong);
+void	addsubimm(ulong);
+void	bitfield(ulong);
+void	extract(ulong);
+void	logimm(ulong);
+void	movwimm(ulong);
+void	pcrel(ulong);
+void	addsubreg(ulong);
+void	addsubsreg(ulong);
+void	addsubc(ulong);
+void	condcmpimm(ulong);
+void	condcmpreg(ulong);
+void	condsel(ulong);
+void	dp1(ulong);
+void	dp2(ulong);
+void	dp3(ulong);
+void	logsreg(ulong);
+void	ldstreg(ulong);
+void	ldstex(ulong);
+void	ldstnoallocp(ulong);
+void	ldstregimmpost(ulong);
+void	ldstregimmpre(ulong);
+void	ldstregoff(ulong);
+void	ldstregupriv(ulong);
+void	ldstreguscaleimm(ulong);
+void	ldstregusignimm(ulong);
+void	ldstregpoff(ulong);
+void	ldstregppost(ulong);
+void	ldstregppre(ulong);
+
 void
 run(void)
 {
