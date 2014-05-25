@@ -28,7 +28,7 @@ ifetch(ulong addr)
 
 	va += addr&(BY2PG-1);
 
-	return va[0]<<24 | va[1]<<16 | va[2]<<8 | va[3];
+	return va[3]<<24 | va[2]<<16 | va[1]<<8 | va[0];
 }
 
 ulong
@@ -39,7 +39,7 @@ getmem_4(ulong addr)
 
 	val = 0;
 	for(i = 0; i < 4; i++)
-		val = val<<8 | getmem_b(addr++);
+		val = (val>>8) | (getmem_b(addr++)<<24);
 	return val;
 }
 
@@ -47,32 +47,33 @@ ulong
 getmem_2(ulong addr)
 {
 	ulong val;
+	int i;
 
-	val = getmem_b(addr);
-	val = val<<8 | getmem_b(addr+1);
-
+	val = 0;
+	for(i = 0; i < 2; i++)
+		val = (val>>8) | (getmem_b(addr++)<<16);
 	return val;
 }
 
 uvlong
 getmem_v(ulong addr)
 {
-	if(addr&3) {	/* 7? */
-		Bprint(bioout, "mem_address_not_aligned [load addr %.8lux]\n", addr);
-		longjmp(errjmp, 0);
-	}
-
-	return ((uvlong)getmem_w(addr) << 32) | getmem_w(addr+4);
+	return ((uvlong)getmem_w(addr+4) << 32) | getmem_w(addr);
 }
 
 ulong
 getmem_w(ulong addr)
 {
 	uchar *va;
+	ulong w;
 
 	if(addr&3) {
-		Bprint(bioout, "mem_address_not_aligned [load addr %.8lux]\n", addr);
-		longjmp(errjmp, 0);
+		w = getmem_w(addr & ~3);
+		while(addr & 3) {
+			w = (w>>8) | (w<<24);
+			addr--;
+		}
+		return w;
 	}
 	if(membpt)
 		brkchk(addr, Read);
@@ -80,17 +81,22 @@ getmem_w(ulong addr)
 	va = vaddr(addr);
 	va += addr&(BY2PG-1);
 
-	return va[0]<<24 | va[1]<<16 | va[2]<<8 | va[3];
+	return va[3]<<24 | va[2]<<16 | va[1]<<8 | va[0];
 }
 
 ushort
 getmem_h(ulong addr)
 {
 	uchar *va;
+	ulong w;
 
 	if(addr&1) {
-		Bprint(bioout, "mem_address_not_aligned [load addr %.8lux]\n", addr);
-		longjmp(errjmp, 0);
+		w = getmem_h(addr & ~1);
+		while(addr & 1) {
+			w = (w>>8) | (w<<8);
+			addr--;
+		}
+		return w;
 	}
 	if(membpt)
 		brkchk(addr, Read);
@@ -98,7 +104,7 @@ getmem_h(ulong addr)
 	va = vaddr(addr);
 	va += addr&(BY2PG-1);
 
-	return va[0]<<8 | va[1];
+	return va[1]<<8 | va[0];
 }
 
 uchar
@@ -117,13 +123,8 @@ getmem_b(ulong addr)
 void
 putmem_v(ulong addr, uvlong data)
 {
-	if(addr&3) {	/* 7? */
-		Bprint(bioout, "mem_address_not_aligned [store addr %.8lux]\n", addr);
-		longjmp(errjmp, 0);
-	}
-
-	putmem_w(addr, data>>32);	/* two stages, to catch brkchk */
-	putmem_w(addr+4, data);
+	putmem_w(addr, data);	/* two stages, to catch brkchk */
+	putmem_w(addr+4, data>>32);
 }
 
 void
@@ -139,10 +140,10 @@ putmem_w(ulong addr, ulong data)
 	va = vaddr(addr);
 	va += addr&(BY2PG-1);
 
-	va[0] = data>>24;
-	va[1] = data>>16;
-	va[2] = data>>8;
-	va[3] = data;
+	va[3] = data>>24;
+	va[2] = data>>16;
+	va[1] = data>>8;
+	va[0] = data;
 	if(membpt)
 		brkchk(addr, Write);
 }
