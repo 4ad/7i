@@ -4,7 +4,7 @@
 #include <bio.h>
 #include <mach.h>
 #define Extern extern
-#include "power.h"
+#include "arm64.h"
 
 char	buf[128], lastcmd[128];
 char	fmt = 'X';

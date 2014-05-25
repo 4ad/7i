@@ -1,7 +1,7 @@
 </$objtype/mkfile
 
-TARG=qi
-OFILES= qi.$O\
+TARG=7i
+OFILES= 7i.$O\
 	run.$O\
 	mem.$O\
 	syscall.$O\
@@ -14,7 +14,7 @@ OFILES= qi.$O\
 	branch.$O\
 	iu.$O\
 
-HFILES=power.h\
+HFILES=arm64.h\
 
 BIN=/$objtype/bin
 

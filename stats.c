@@ -3,7 +3,7 @@
 #include <bio.h>
 #include <mach.h>
 #define Extern extern
-#include "power.h"
+#include "arm64.h"
 
 #define	prof profqi
 #define Percent(num, max)	(int)(((vlong)(num)*100)/(max))

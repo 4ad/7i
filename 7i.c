@@ -4,7 +4,7 @@
 #include <mach.h>
 #include <tos.h>
 #define Extern
-#include "power.h"
+#include "arm64.h"
 
 char	*file = "q.out";
 int	datasize;
