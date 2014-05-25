@@ -373,6 +373,8 @@ Inst itab[] =
 	[Clsppr+ 8]	{ldstregppre, "STP",   	Istore}, /* 2120 */
 	[Clsppr+ 9]	{ldstregppre, "LDP",   	 Iload}, /* 2121 */
 
+	[Cundef]	{undef, "???",   	 Inop}, /* 2176 */
+
 	{ 0 }
 };
 
