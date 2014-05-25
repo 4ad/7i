@@ -211,3 +211,42 @@ extern		ulong bits[];
 
 #define getop(i) ((i>>26)&0x3F)
 #define getxo(i) ((i>>1)&0x3FF)
+
+/* instruction classes: iota << 6. */
+enum {
+	Ccmpb  =    0,	/* compare and branch */
+	Ccb    =   64,	/* conditional branch */
+	Csys   =  128,	/* system */
+	Ctb    =  192,	/* test and branch */
+	Cubi   =  256,	/* unconditional branch imm */
+	Cubr   =  320,	/* unconditional branch reg */
+	Cai    =  384,	/* add/sub imm */
+	Cab    =  448,	/* bitfield */
+	Cax    =  512,	/* extract */
+	Cali   =  576,	/* logic imm */
+	Camwi  =  640,	/* move wide imm */
+	Capcr  =  704,	/* PC-rel addr */
+	Car    =  768,	/* add/sub extended reg */
+	Casr   =  832,	/* add/sub shift-reg */
+	Cac    =  896,	/* add/sub carry */
+	Caci   =  960,	/* cond compare imm */
+	Cacr   = 1024,	/* cond compare reg */
+	Cacs   = 1088,	/* cond select */
+	Ca1    = 1152,	/* data proc 1 src */
+	Ca2    = 1216,	/* data proc 2 src */
+	Ca3    = 1280,	/* data proc 3 src */
+	Calsr  = 1344,	/* logic shift-reg */
+	Clsr   = 1408,	/* load/store reg */
+	Clsx   = 1472,	/* load/store ex */
+	Clsnp  = 1536,	/* load/store no-alloc pair (off) */
+	Clspos = 1600,	/* load/store reg (imm post-index) */
+	Clspre = 1664,	/* load/store reg (imm pre-index) */
+	Clso   = 1728,	/* load/store reg (off) */
+	Clsu   = 1792,	/* load/store reg (unpriv) */
+	Clsuci = 1856,	/* load/store reg (unscaled imm) */
+	Clsusi = 1920,	/* load/store reg (unsigned imm) */
+	Clsrpo = 1984,	/* load/store reg-pair (off) */
+	Clsppo = 2048,	/* load/store reg-pair (post-index) */
+	Clsppr = 2112,	/* load/store reg-pair (pre-index) */
+	Cundef = 2176	/* undefined instruction */
+};
