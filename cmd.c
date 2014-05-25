@@ -405,13 +405,16 @@ pfmt(char fmt, int mem, ulong val)
 
 	case 'I':
 	case 'i':
-		inc = machdata->das(symmap, dot, fmt, str, sizeof(str));
-		if (inc < 0) {
-			Bprint(bioout, "qi: %r\n");
-			return 0;
-		}
-		c = Bprint(bioout, "\t%s", str);
+		// TODO(aram): re-enable once we have it in libmach.
+		Bprint(bioout, "7i: not implemented\n");
 		break;
+		// inc = machdata->das(symmap, dot, fmt, str, sizeof(str));
+		// if (inc < 0) {
+		// 	Bprint(bioout, "qi: %r\n");
+		// 	return 0;
+		// }
+		// c = Bprint(bioout, "\t%s", str);
+		// break;
 
 	case 'n':
 		c = width+1;

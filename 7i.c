@@ -111,13 +111,14 @@ inithdr(int fd)
 {
 	Symbol s;
 
-	extern Machdata powermach;
+	// TODO(aram): enable once we have it in libmach.
+	// extern Machdata arm64mach;
 
 	seek(fd, 0, 0);
 	if (!crackhdr(fd, &fhdr))
 		fatal(0, "read text header");
 
-	if(fhdr.type != FPOWER)
+	if(fhdr.type != FARM64)
 		fatal(0, "bad magic number");
 
 	if(syminit(fd, &fhdr) < 0)
@@ -125,7 +126,8 @@ inithdr(int fd)
 	symmap = loadmap(symmap, fd, &fhdr);
 	if (mach->sbreg && lookup(0, mach->sbreg, &s))
 		mach->sb = s.value;
-	machdata = &powermach;
+	// TODO(aram): enable once we have it in libmach.
+	// machdata = &arm64mach;
 }
 
 ulong
