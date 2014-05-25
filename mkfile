@@ -11,8 +11,6 @@ OFILES= 7i.$O\
 	cmd.$O\
 	bpt.$O\
 	float.$O\
-	branch.$O\
-	iu.$O\
 
 HFILES=arm64.h\
 
