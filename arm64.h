@@ -125,7 +125,6 @@ void		fatal(int, char*, ...);
 void		fpreginit(void);
 void		run(void);
 void		undef(ulong);
-void		unimp(ulong);
 void		dumpreg(void);
 void		dumpfreg(void);
 void		dumpdreg(void);
