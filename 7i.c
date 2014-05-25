@@ -160,7 +160,6 @@ roff[] = {
 	REGOFF(r22),	REGOFF(r23),	REGOFF(r24),
 	REGOFF(r25),	REGOFF(r26),	REGOFF(r27),
 	REGOFF(r28),	REGOFF(r29),	REGOFF(r30),
-	REGOFF(r31),
 };
 
 void
@@ -246,7 +245,6 @@ procinit(int pid)
 	reg.r[1] = greg(m, REGOFF(sp));
 	reg.r[2] = greg(m, REGOFF(r2));
 	reg.r[30] = greg(m, REGOFF(r30));
-	reg.r[31] = greg(m, REGOFF(r31));
 
 	for(i = 0; i < 32; i++)
 		reg.r[i] = greg(m, roff[i-1]);
