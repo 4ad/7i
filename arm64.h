@@ -199,8 +199,6 @@ extern		int printcol;
 Extern		Map *symmap;
 extern		ulong bits[];
 
-extern		Inset ops0, ops19, ops31, ops59, ops63a, ops63b;
-
 /* Plan9 Kernel constants */
 #define	BY2PG		4096
 #define BY2WD		4
