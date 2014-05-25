@@ -381,7 +381,7 @@ run(void)
 {
 	do {
 		reg.ir = ifetch(reg.pc);
-		ci = 0;
+		ci = nil;
 		if(ci && ci->func){
 			ci->count++;
 			(*ci->func)(reg.ir);
