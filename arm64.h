@@ -1,12 +1,5 @@
 /*
- * power sim.h
- *
- * The integer instruction side of this emulator is portable if sizeof(long) >= 4
- * Floating point emulation assumes:
- *	sizeof(ulong) == sizeof(float)
- *	sizeof(ulong)*2 == sizeof(double) <= sizeof(vlong)
- *	unions of double & vlong have no padding
- *	vlongs provide at least 64 bits precision
+ * arm64.h
  */
 #include "/power/include/ureg.h"
 #define	USERADDR	0xC0000000
