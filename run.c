@@ -616,7 +616,9 @@ cmpb(ulong ir)
 	ulong sf, op, imm19, Rt;
 
 	getcmpb(ir);
-	USED(sf, op, imm19, Rt);
+	USED(sf, op);
+	if(trace)
+		itrace("%s\timm19=%d, Rt=%d", reg.ip->name, imm19, Rt);
 }
 
 /* conditional branch
@@ -630,7 +632,9 @@ condb(ulong ir)
 	ulong o1, imm19, o0, cond;
 
 	getcb(ir);
-	USED(o1, imm19, o0, cond);
+	USED(o0);
+	if(trace)
+		itrace("%s\to1=%d, imm19=%d, cond=%d", reg.ip->name, o1, imm19, cond);
 }
 
 /* system
@@ -644,7 +648,9 @@ syscall(ulong ir)
 	ulong opc, imm16, LL;
 
 	getsys(ir);
-	USED(opc, imm16, LL);
+	USED(opc, LL);
+	if(trace)
+		itrace("%s\timm16=%d", reg.ip->name, imm16);
 }
 
 /* test and branch
@@ -659,7 +665,9 @@ tb(ulong ir)
 	ulong b5, op, b40, imm14, Rt;
 
 	gettb(ir);
-	USED(b5, op, b40, imm14, Rt);
+	USED(op);
+	if(trace)
+		itrace("%s\tb5=%d, b40=%d, imm14=%d, Rt=%d", reg.ip->name, b5, b40, imm14, Rt);
 }
 
 /* unconditional branch imm
@@ -674,7 +682,9 @@ uncondbimm(ulong ir)
 	ulong op, imm26;
 
 	getubi(ir);
-	USED(op, imm26);
+	USED(op);
+	if(trace)
+		itrace("%s\timm26=%d", reg.ip->name, imm26);
 }
 
 /* unconditional branch reg
@@ -690,7 +700,9 @@ uncondbreg(ulong ir)
 	ulong opc, op2, Rn;
 
 	getubr(ir);
-	USED(opc, op2, Rn);
+	USED(opc, op2);
+	if(trace)
+		itrace("%s\tRn=%d", reg.ip->name, Rn);
 }
 
 /* add/sub imm
@@ -711,7 +723,9 @@ addsubimm(ulong ir)
 	ulong sf, op, S, shift, imm12, Rn, Rd;
 
 	getai(ir);
-	USED(sf, op, S, shift, imm12, Rn, Rd);
+	USED(sf, op, S);
+	if(trace)
+		itrace("%s\tshift=%d, imm12=%d, Rn=%d, Rd=%d", reg.ip->name, shift, imm12, Rn, Rd);
 }
 
 /* bitfield
@@ -730,7 +744,9 @@ bitfield(ulong ir)
 	ulong sf, opc, N, immr, imms, Rn, Rd;
 
 	getab(ir);
-	USED(sf, opc, N, immr, imms, Rn, Rd);
+	USED(sf, opc, N);
+	if(trace)
+		itrace("%s\timmr=%d, imms=%d, Rn=%d, Rd=%d", reg.ip->name, immr, imms, Rn, Rd);
 }
 
 /* extract
@@ -745,7 +761,9 @@ extract(ulong ir)
 	ulong sf, op21, N, o0, Rm, imms, Rn, Rd;
 
 	getax(ir);
-	USED(sf, op21, N, o0, Rm, imms, Rn, Rd);
+	USED(sf, op21, N, o0);
+	if(trace)
+		itrace("%s\tRm=%d, imms=%d, Rn=%d, Rd=%d", reg.ip->name, Rm, imms, Rn, Rd);
 }
 
 /* logic imm
@@ -766,7 +784,9 @@ logimm(ulong ir)
 	ulong sf, opc, N, immr, imms, Rn, Rd;
 
 	getali(ir);
-	USED(sf, opc, N, immr, imms, Rn, Rd);
+	USED(sf, opc);
+	if(trace)
+		itrace("%s\tN=%d, immr=%d, imms=%d, Rn=%d, Rd=%d", reg.ip->name, N, immr, imms, Rn, Rd);
 }
 
 /* move wide imm
@@ -785,7 +805,9 @@ movwimm(ulong ir)
 	ulong sf, opc, hw, imm16, Rd;
 
 	getamwi(ir);
-	USED(sf, opc, hw, imm16, Rd);
+	USED(sf, opc);
+	if(trace)
+		itrace("%s\thw=%d, imm16=%d, Rd=%d", reg.ip->name, hw, imm16, Rd);
 }
 
 /* PC-rel addr
@@ -800,7 +822,9 @@ pcrel(ulong ir)
 	ulong op, immlo, immhi, Rd;
 
 	getapcr(ir);
-	USED(op, immlo, immhi, Rd);
+	USED(op, immlo);
+	if(trace)
+		itrace("%s\timmhi=%d, Rd=%d", reg.ip->name, immhi, Rd);
 }
 
 /* add/sub extended reg
@@ -821,7 +845,9 @@ addsubreg(ulong ir)
 	ulong sf, op, S, opt, Rm, option, imm3, Rn, Rd;
 
 	getar(ir);
-	USED(sf, op, S, opt, Rm, option, imm3, Rn, Rd);
+	USED(sf, op, S, opt);
+	if(trace)
+		itrace("%s\tRm=%d, option=%d, imm3=%d, Rn=%d, Rd=%d", reg.ip->name, Rm, option, imm3, Rn, Rd);
 }
 
 /* add/sub shift-reg
@@ -842,7 +868,9 @@ addsubsreg(ulong ir)
 	ulong sf, op, S, shift, Rm, imm6, Rn, Rd;
 
 	getasr(ir);
-	USED(sf, op, S, shift, Rm, imm6, Rn, Rd);
+	USED(sf, op, S, shift);
+	if(trace)
+		itrace("%s\tRm=%d, imm6=%d, Rn=%d, Rd=%d", reg.ip->name, Rm, imm6, Rn, Rd);
 }
 
 /* add/sub carry
@@ -863,7 +891,9 @@ addsubc(ulong ir)
 	ulong sf, op, S, Rm, Rn, Rd;
 
 	getac(ir);
-	USED(sf, op, S, Rm, Rn, Rd);
+	USED(sf, op, S);
+	if(trace)
+		itrace("%s\tRm=%d, Rn=%d, Rd=%d", reg.ip->name, Rm, Rn, Rd);
 }
 
 /* cond compare imm
@@ -880,7 +910,9 @@ condcmpimm(ulong ir)
 	ulong sf, op, S, imm5, cond, Rn, nzcv;
 
 	getaci(ir);
-	USED(sf, op, S, imm5, cond, Rn, nzcv);
+	USED(sf, op, S);
+	if(trace)
+		itrace("%s\timm5=%d, cond=%d, Rn=%d, nzcv=%d", reg.ip->name, imm5, cond, Rn, nzcv);
 }
 
 /* cond compare reg
@@ -897,7 +929,9 @@ condcmpreg(ulong ir)
 	ulong sf, op, S, Rm, cond, Rn, nzcv;
 
 	getacr(ir);
-	USED(sf, op, S, Rm, cond, Rn, nzcv);
+	USED(sf, op, S);
+	if(trace)
+		itrace("%s\tRm=%d, cond=%d, Rn=%d, nzcv=%d", reg.ip->name, Rm, cond, Rn, nzcv);
 }
 
 /* cond select
@@ -918,7 +952,9 @@ condsel(ulong ir)
 	ulong sf, op, S, Rm, cond, op2, Rn, Rd;
 
 	getacs(ir);
-	USED(sf, op, S, Rm, cond, op2, Rn, Rd);
+	USED(sf, op, S, op2);
+	if(trace)
+		itrace("%s\tRm=%d, cond=%d, Rn=%d, Rd=%d", reg.ip->name, Rm, cond, Rn, Rd);
 }
 
 /* data proc 1 src
@@ -942,7 +978,9 @@ dp1(ulong ir)
 	ulong sf, S, opcode, Rn, Rd;
 
 	geta1(ir);
-	USED(sf, S, opcode, Rn, Rd);
+	USED(sf, S, opcode);
+	if(trace)
+		itrace("%s\tRn=%d, Rd=%d", reg.ip->name, Rn, Rd);
 }
 
 /* data proc 2 src
@@ -967,7 +1005,9 @@ dp2(ulong ir)
 	ulong sf, Rm, opcode, Rn, Rd;
 
 	geta2(ir);
-	USED(sf, Rm, opcode, Rn, Rd);
+	USED(sf, opcode);
+	if(trace)
+		itrace("%s\tRm=%d, Rn=%d, Rd=%d", reg.ip->name, Rm, Rn, Rd);
 }
 
 /* data proc 3 src
@@ -984,7 +1024,9 @@ dp3(ulong ir)
 	ulong sf, op31, Rm, o0, Ra, Rn, Rd;
 
 	geta3(ir);
-	USED(sf, op31, Rm, o0, Ra, Rn, Rd);
+	USED(sf, op31, o0);
+	if(trace)
+		itrace("%s\tRm=%d, Ra=%d, Rn=%d, Rd=%d", reg.ip->name, Rm, Ra, Rn, Rd);
 }
 
 /* logic shift-reg
@@ -1013,7 +1055,9 @@ logsreg(ulong ir)
 	ulong sf, opc, shift, N, Rm, imm6, Rn, Rd;
 
 	getalsr(ir);
-	USED(sf, opc, shift, N, Rm, imm6, Rn, Rd);
+	USED(sf, opc, N);
+	if(trace)
+		itrace("%s\tshift=%d, Rm=%d, imm6=%d, Rn=%d, Rd=%d", reg.ip->name, shift, Rm, imm6, Rn, Rd);
 }
 
 /* load/store reg
@@ -1030,7 +1074,9 @@ ldstreg(ulong ir)
 	ulong opc, V, imm19, Rt;
 
 	getlsr(ir);
-	USED(opc, V, imm19, Rt);
+	USED(opc, V);
+	if(trace)
+		itrace("%s\timm19=%d, Rt=%d", reg.ip->name, imm19, Rt);
 }
 
 /* load/store ex
@@ -1075,7 +1121,9 @@ ldstex(ulong ir)
 	ulong size, o2, L, o1, Rs, o0, Rt2, Rn, Rt;
 
 	getlsx(ir);
-	USED(size, o2, L, o1, Rs, o0, Rt2, Rn, Rt);
+	USED(size, o2, L, o1, o0);
+	if(trace)
+		itrace("%s\tRs=%d, Rt2=%d, Rn=%d, Rt=%d", reg.ip->name, Rs, Rt2, Rn, Rt);
 }
 
 /* load/store no-alloc pair (off)
@@ -1092,7 +1140,9 @@ ldstnoallocp(ulong ir)
 	ulong opc, V, L, imm7, Rt2, Rn, Rt;
 
 	getlsnp(ir);
-	USED(opc, V, L, imm7, Rt2, Rn, Rt);
+	USED(opc, V, L);
+	if(trace)
+		itrace("%s\timm7=%d, Rt2=%d, Rn=%d, Rt=%d", reg.ip->name, imm7, Rt2, Rn, Rt);
 }
 
 /* load/store reg (imm post-index)
@@ -1118,7 +1168,9 @@ ldstregimmpost(ulong ir)
 	ulong size, V, opc, imm9, Rn, Rt;
 
 	getlspos(ir);
-	USED(size, V, opc, imm9, Rn, Rt);
+	USED(size, V, opc);
+	if(trace)
+		itrace("%s\timm9=%d, Rn=%d, Rt=%d", reg.ip->name, imm9, Rn, Rt);
 }
 
 /* load/store reg (imm pre-index)
@@ -1144,7 +1196,9 @@ ldstregimmpre(ulong ir)
 	ulong size, V, opc, imm9, Rn, Rt;
 
 	getlspre(ir);
-	USED(size, V, opc, imm9, Rn, Rt);
+	USED(size, V, opc);
+	if(trace)
+		itrace("%s\timm9=%d, Rn=%d, Rt=%d", reg.ip->name, imm9, Rn, Rt);
 }
 
 /* load/store reg (off)
@@ -1170,7 +1224,9 @@ ldstregoff(ulong ir)
 	ulong size, V, opc, Rm, option, S, Rn, Rt;
 
 	getlso(ir);
-	USED(size, V, opc, Rm, option, S, Rn, Rt);
+	USED(size, V, opc);
+	if(trace)
+		itrace("%s\tRm=%d, option=%d, S=%d, Rn=%d, Rt=%d", reg.ip->name, Rm, option, S, Rn, Rt);
 }
 
 /* load/store reg (unpriv)
@@ -1196,7 +1252,9 @@ ldstregupriv(ulong ir)
 	ulong size, V, opc, imm9, Rn, Rt;
 
 	getlsu(ir);
-	USED(size, V, opc, imm9, Rn, Rt);
+	USED(size, V, opc);
+	if(trace)
+		itrace("%s\timm9=%d, Rn=%d, Rt=%d", reg.ip->name, imm9, Rn, Rt);
 }
 
 /* load/store reg (unscaled imm)
@@ -1223,7 +1281,9 @@ ldstreguscaleimm(ulong ir)
 	ulong size, V, opc, imm9, Rn, Rt;
 
 	getlsuci(ir);
-	USED(size, V, opc, imm9, Rn, Rt);
+	USED(size, V, opc);
+	if(trace)
+		itrace("%s\timm9=%d, Rn=%d, Rt=%d", reg.ip->name, imm9, Rn, Rt);
 }
 
 /* load/store reg (unsigned imm)
@@ -1250,7 +1310,9 @@ ldstregusignimm(ulong ir)
 	ulong size, V, opc, imm12, Rn, Rt;
 
 	getlsusi(ir);
-	USED(size, V, opc, imm12, Rn, Rt);
+	USED(size, V, opc);
+	if(trace)
+		itrace("%s\timm12=%d, Rn=%d, Rt=%d", reg.ip->name, imm12, Rn, Rt);
 }
 
 /* load/store reg-pair (off)
@@ -1268,7 +1330,9 @@ ldstregpoff(ulong ir)
 	ulong opc, V, L, imm7, Rt2, Rn, Rt;
 
 	getlsrpo(ir);
-	USED(opc, V, L, imm7, Rt2, Rn, Rt);
+	USED(opc, V, L);
+	if(trace)
+		itrace("%s\timm7=%d, Rt2=%d, Rn=%d, Rt=%d", reg.ip->name, imm7, Rt2, Rn, Rt);
 }
 
 /* load/store reg-pair (post-index)
@@ -1286,7 +1350,9 @@ ldstregppost(ulong ir)
 	ulong opc, V, L, imm7, Rt2, Rn, Rt;
 
 	getlsppo(ir);
-	USED(opc, V, L, imm7, Rt2, Rn, Rt);
+	USED(opc, V, L);
+	if(trace)
+		itrace("%s\timm7=%d, Rt2=%d, Rn=%d, Rt=%d", reg.ip->name, imm7, Rt2, Rn, Rt);
 }
 
 /* load/store reg-pair (pre-index)
@@ -1304,5 +1370,7 @@ ldstregppre(ulong ir)
 	ulong opc, V, L, imm7, Rt2, Rn, Rt;
 
 	getlsppr(ir);
-	USED(opc, V, L, imm7, Rt2, Rn, Rt);
+	USED(opc, V, L);
+	if(trace)
+		itrace("%s\timm7=%d, Rt2=%d, Rn=%d, Rt=%d", reg.ip->name, imm7, Rt2, Rn, Rt);
 }
