@@ -40,6 +40,342 @@ void	ldstregpoff(ulong);
 void	ldstregppost(ulong);
 void	ldstregppre(ulong);
 
+Inst itab[] =
+{
+	/* compare and branch */
+	[Ccmpb+ 0]	{cmpb, "CBZ",   	Ibranch}, /* 0 */
+	[Ccmpb+ 2]	{cmpb, "CBZ",   	Ibranch}, /* 2 */
+	[Ccmpb+ 1]	{cmpb, "CBNZ",  	Ibranch}, /* 1 */
+	[Ccmpb+ 3]	{cmpb, "CBNZ",  	Ibranch}, /* 3 */
+
+	/* conditional branch */
+	[Ccb+ 0]	{condb, "B.cond",	Ibranch}, /* 64 */
+
+	/* system */
+	[Csys+ 1]	{syscall, "SYS",   	Isyscall}, /* 129 */
+
+	/* test and branch */
+	[Ctb+ 0]	{tb, "TBZ",   	Ibranch}, /* 192 */
+	[Ctb+ 1]	{tb, "TBNZ",  	Ibranch}, /* 193 */
+
+	/* unconditional branch imm */
+	[Cubi+ 0]	{uncondbimm, "B",     	Ibranch}, /* 256 */
+	[Cubi+ 1]	{uncondbimm, "BL",    	Ibranch}, /* 257 */
+
+	/* unconditional branch reg */
+	[Cubr+31]	{uncondbreg, "BR",    	Ibranch}, /* 351 */
+	[Cubr+63]	{uncondbreg, "BLR",   	Ibranch}, /* 383 */
+	[Cubr+95]	{uncondbreg, "RET",   	Ibranch}, /* 351 */
+
+	/* add/sub imm */
+	[Cai+ 0]	{addsubimm, "ADD",   	Iarith}, /* 384 */
+	[Cai+ 1]	{addsubimm, "ADDS",  	Iarith}, /* 385 */
+	[Cai+ 2]	{addsubimm, "SUB",   	Iarith}, /* 386 */
+	[Cai+ 3]	{addsubimm, "SUBS",  	Iarith}, /* 387 */
+	[Cai+ 4]	{addsubimm, "ADD",   	Iarith}, /* 388 */
+	[Cai+ 5]	{addsubimm, "ADDS",  	Iarith}, /* 389 */
+	[Cai+ 6]	{addsubimm, "SUB",   	Iarith}, /* 390 */
+	[Cai+ 7]	{addsubimm, "SUBS",  	Iarith}, /* 391 */
+
+	/* bitfield */
+	[Cab+ 0]	{bitfield, "SBFM",  	Iarith}, /* 448 */
+	[Cab+ 2]	{bitfield, "BFM",   	Iarith}, /* 450 */
+	[Cab+ 4]	{bitfield, "UBFM",  	Iarith}, /* 452 */
+	[Cab+ 9]	{bitfield, "SBFM",  	Iarith}, /* 457 */
+	[Cab+11]	{bitfield, "BFM",   	Iarith}, /* 459 */
+	[Cab+13]	{bitfield, "UBFM",  	Iarith}, /* 461 */
+
+	/* extract */
+	[Cax+ 0]	{extract, "EXTR",  	Iarith}, /* 512 */
+	[Cax+18]	{extract, "EXTR",  	Iarith}, /* 530 */
+
+	/* logic imm */
+	[Cali+ 0]	{logimm, "AND",   	  Ilog}, /* 576 */
+	[Cali+ 1]	{logimm, "ORR",   	  Ilog}, /* 577 */
+	[Cali+ 2]	{logimm, "EOR",   	  Ilog}, /* 578 */
+	[Cali+ 3]	{logimm, "ANDS",  	  Ilog}, /* 579 */
+	[Cali+ 4]	{logimm, "AND",   	  Ilog}, /* 580 */
+	[Cali+ 5]	{logimm, "ORR",   	  Ilog}, /* 581 */
+	[Cali+ 6]	{logimm, "EOR",   	  Ilog}, /* 582 */
+	[Cali+ 7]	{logimm, "ANDS",  	  Ilog}, /* 583 */
+
+	/* move wide imm */
+	[Camwi+ 0]	{movwimm, "MOVN",  	Iarith}, /* 640 */
+	[Camwi+ 2]	{movwimm, "MOVZ",  	Iarith}, /* 642 */
+	[Camwi+ 3]	{movwimm, "MOVK",  	Iarith}, /* 643 */
+	[Camwi+ 4]	{movwimm, "MOVN",  	Iarith}, /* 644 */
+	[Camwi+ 6]	{movwimm, "MOVZ",  	Iarith}, /* 646 */
+	[Camwi+ 7]	{movwimm, "MOVK",  	Iarith}, /* 647 */
+
+	/* PC-rel addr */
+	[Capcr+ 0]	{pcrel, "ADR",   	Iarith}, /* 704 */
+	[Capcr+ 4]	{pcrel, "ADRP",  	Iarith}, /* 708 */
+
+	/* add/sub extended reg */
+	[Car+ 0]	{addsubreg, "ADD",   	Iarith}, /* 768 */
+	[Car+ 4]	{addsubreg, "ADDS",  	Iarith}, /* 772 */
+	[Car+ 8]	{addsubreg, "SUB",   	Iarith}, /* 776 */
+	[Car+12]	{addsubreg, "SUBS",  	Iarith}, /* 780 */
+	[Car+16]	{addsubreg, "ADD",   	Iarith}, /* 784 */
+	[Car+20]	{addsubreg, "ADDS",  	Iarith}, /* 788 */
+	[Car+24]	{addsubreg, "SUB",   	Iarith}, /* 792 */
+	[Car+28]	{addsubreg, "SUBS",  	Iarith}, /* 796 */
+
+	/* add/sub shift-reg */
+	[Casr+ 0]	{addsubsreg, "ADD",   	Iarith}, /* 832 */
+	[Casr+ 4]	{addsubsreg, "ADDS",  	Iarith}, /* 836 */
+	[Casr+ 8]	{addsubsreg, "ADD",   	Iarith}, /* 840 */
+	[Casr+12]	{addsubsreg, "ADDS",  	Iarith}, /* 844 */
+	[Casr+16]	{addsubsreg, "ADD",   	Iarith}, /* 848 */
+	[Casr+20]	{addsubsreg, "ADDS",  	Iarith}, /* 852 */
+	[Casr+24]	{addsubsreg, "ADD",   	Iarith}, /* 856 */
+	[Casr+28]	{addsubsreg, "ADDS",  	Iarith}, /* 860 */
+
+	/* add/sub carry */
+	[Cac+ 0]	{addsubc, "ADC",   	Iarith}, /* 896 */
+	[Cac+ 1]	{addsubc, "ADCS",  	Iarith}, /* 897 */
+	[Cac+ 2]	{addsubc, "SBC",   	Iarith}, /* 898 */
+	[Cac+ 3]	{addsubc, "SBCS",  	Iarith}, /* 899 */
+	[Cac+ 4]	{addsubc, "ADC",   	Iarith}, /* 900 */
+	[Cac+ 5]	{addsubc, "ADCS",  	Iarith}, /* 901 */
+	[Cac+ 6]	{addsubc, "SBC",   	Iarith}, /* 902 */
+	[Cac+ 7]	{addsubc, "SBCS",  	Iarith}, /* 903 */
+
+	/* cond compare imm */
+	[Caci+ 1]	{condcmpimm, "CCMN",  	Iarith}, /* 961 */
+	[Caci+ 3]	{condcmpimm, "CCMP",  	Iarith}, /* 963 */
+	[Caci+ 5]	{condcmpimm, "CCMN",  	Iarith}, /* 965 */
+	[Caci+ 7]	{condcmpimm, "CCMP",  	Iarith}, /* 967 */
+
+	/* cond compare reg */
+	[Cacr+ 1]	{condcmpreg, "CCMN",  	Iarith}, /* 1025 */
+	[Cacr+ 3]	{condcmpreg, "CCMP",  	Iarith}, /* 1027 */
+	[Cacr+ 5]	{condcmpreg, "CCMN",  	Iarith}, /* 1029 */
+	[Cacr+ 7]	{condcmpreg, "CCMP",  	Iarith}, /* 1031 */
+
+	/* cond select */
+	[Cacs+ 0]	{condsel, "CSEL",  	Iarith}, /* 1088 */
+	[Cacs+ 1]	{condsel, "CSINC", 	Iarith}, /* 1089 */
+	[Cacs+ 8]	{condsel, "CSINV", 	Iarith}, /* 1096 */
+	[Cacs+ 9]	{condsel, "CSNEG", 	Iarith}, /* 1097 */
+	[Cacs+16]	{condsel, "CSEL",  	Iarith}, /* 1104 */
+	[Cacs+17]	{condsel, "CSINC", 	Iarith}, /* 1105 */
+	[Cacs+24]	{condsel, "CSINV", 	Iarith}, /* 1112 */
+	[Cacs+25]	{condsel, "CSNEG", 	Iarith}, /* 1113 */
+
+	/* data proc 1 src */
+	[Ca1+ 0]	{dp1, "RBIT",  	Iarith}, /* 1152 */
+	[Ca1+ 1]	{dp1, "REV16", 	Iarith}, /* 1153 */
+	[Ca1+ 2]	{dp1, "REV",   	Iarith}, /* 1154 */
+	[Ca1+ 4]	{dp1, "CLZ",   	Iarith}, /* 1156 */
+	[Ca1+ 5]	{dp1, "CLZ",   	Iarith}, /* 1157 */
+	[Ca1+16]	{dp1, "RBIT",  	Iarith}, /* 1168 */
+	[Ca1+17]	{dp1, "REV16", 	Iarith}, /* 1169 */
+	[Ca1+18]	{dp1, "REV32", 	Iarith}, /* 1170 */
+	[Ca1+19]	{dp1, "REV",   	Iarith}, /* 1171 */
+	[Ca1+20]	{dp1, "CLZ",   	Iarith}, /* 1172 */
+	[Ca1+21]	{dp1, "CLZ",   	Iarith}, /* 1173 */
+
+	/* data proc 2 src */
+	[Ca2+ 2]	{dp2, "UDIV",  	Iarith}, /* 1218 */
+	[Ca2+ 3]	{dp2, "SDIV",  	Iarith}, /* 1219 */
+	[Ca2+ 8]	{dp2, "LSLV",  	Iarith}, /* 1224 */
+	[Ca2+ 9]	{dp2, "LSRV",  	Iarith}, /* 1225 */
+	[Ca2+10]	{dp2, "ASRV",  	Iarith}, /* 1226 */
+	[Ca2+11]	{dp2, "RORV",  	Iarith}, /* 1227 */
+	[Ca2+34]	{dp2, "UDIV",  	Iarith}, /* 1250 */
+	[Ca2+35]	{dp2, "SDIV",  	Iarith}, /* 1251 */
+	[Ca2+40]	{dp2, "LSLV",  	Iarith}, /* 1256 */
+	[Ca2+41]	{dp2, "LSRV",  	Iarith}, /* 1257 */
+	[Ca2+42]	{dp2, "ASRV",  	Iarith}, /* 1258 */
+	[Ca2+43]	{dp2, "RORV",  	Iarith}, /* 1259 */
+
+	/* data proc 3 src */
+	[Ca3+ 0]	{dp3, "MADD",  	Iarith}, /* 1280 */
+	[Ca3+ 1]	{dp3, "MSUB",  	Iarith}, /* 1281 */
+	[Ca3+16]	{dp3, "MADD",  	Iarith}, /* 1296 */
+	[Ca3+17]	{dp3, "MSUB",  	Iarith}, /* 1297 */
+
+	/* logic shift-reg */
+	[Calsr+ 0]	{logsreg, "AND",   	  Ilog}, /* 1344 */
+	[Calsr+ 1]	{logsreg, "BIC",   	  Ilog}, /* 1345 */
+	[Calsr+ 2]	{logsreg, "ORR",   	  Ilog}, /* 1346 */
+	[Calsr+ 3]	{logsreg, "ORN",   	  Ilog}, /* 1347 */
+	[Calsr+ 4]	{logsreg, "EOR",   	  Ilog}, /* 1348 */
+	[Calsr+ 5]	{logsreg, "EON",   	  Ilog}, /* 1349 */
+	[Calsr+ 6]	{logsreg, "ANDS",  	  Ilog}, /* 1350 */
+	[Calsr+ 7]	{logsreg, "BICS",  	  Ilog}, /* 1351 */
+	[Calsr+ 8]	{logsreg, "AND",   	  Ilog}, /* 1352 */
+	[Calsr+ 9]	{logsreg, "BIC",   	  Ilog}, /* 1353 */
+	[Calsr+10]	{logsreg, "ORR",   	  Ilog}, /* 1354 */
+	[Calsr+11]	{logsreg, "ORN",   	  Ilog}, /* 1355 */
+	[Calsr+12]	{logsreg, "EOR",   	  Ilog}, /* 1356 */
+	[Calsr+13]	{logsreg, "EON",   	  Ilog}, /* 1357 */
+	[Calsr+14]	{logsreg, "ANDS",  	  Ilog}, /* 1358 */
+	[Calsr+15]	{logsreg, "BICS",  	  Ilog}, /* 1359 */
+
+	/* load/store reg */
+	[Clsr+ 0]	{ldstreg, "LDR",   	 Iload}, /* 1408 */
+	[Clsr+ 2]	{ldstreg, "LDR",   	 Iload}, /* 1410 */
+	[Clsr+ 4]	{ldstreg, "LDRSW", 	 Iload}, /* 1412 */
+	[Clsr+ 6]	{ldstreg, "PRFM",  	 Iload}, /* 1414 */
+
+	/* load/store ex */
+	[Clsx+ 0]	{ldstex, "STXRB", 	Istore}, /* 1472 */
+	[Clsx+ 1]	{ldstex, "STLXRB",	Istore}, /* 1473 */
+	[Clsx+ 4]	{ldstex, "LDXRB", 	 Iload}, /* 1476 */
+	[Clsx+ 5]	{ldstex, "LDAXRB",	 Iload}, /* 1477 */
+	[Clsx+ 9]	{ldstex, "STLRB", 	Istore}, /* 1481 */
+	[Clsx+13]	{ldstex, "LDARB", 	 Iload}, /* 1485 */
+	[Clsx+16]	{ldstex, "STXRH", 	Istore}, /* 1488 */
+	[Clsx+17]	{ldstex, "STLXRH",	Istore}, /* 1489 */
+	[Clsx+20]	{ldstex, "LDXRH", 	 Iload}, /* 1492 */
+	[Clsx+21]	{ldstex, "LDAXRH",	 Iload}, /* 1493 */
+	[Clsx+25]	{ldstex, "STLRH", 	Istore}, /* 1497 */
+	[Clsx+29]	{ldstex, "LDARH", 	 Iload}, /* 1501 */
+	[Clsx+32]	{ldstex, "STXR",  	Istore}, /* 1504 */
+	[Clsx+33]	{ldstex, "STLXR", 	Istore}, /* 1505 */
+	[Clsx+34]	{ldstex, "STXP",  	Istore}, /* 1506 */
+	[Clsx+35]	{ldstex, "STLXP", 	Istore}, /* 1507 */
+	[Clsx+36]	{ldstex, "LDXR",  	 Iload}, /* 1508 */
+	[Clsx+37]	{ldstex, "LDAXR", 	 Iload}, /* 1509 */
+	[Clsx+38]	{ldstex, "LDXP",  	 Iload}, /* 1510 */
+	[Clsx+39]	{ldstex, "LDAXP", 	 Iload}, /* 1511 */
+	[Clsx+41]	{ldstex, "STLR",  	Istore}, /* 1513 */
+	[Clsx+45]	{ldstex, "STLR",  	Istore}, /* 1517 */
+	[Clsx+48]	{ldstex, "STXR",  	Istore}, /* 1520 */
+	[Clsx+49]	{ldstex, "STLXR", 	Istore}, /* 1521 */
+	[Clsx+50]	{ldstex, "STXP",  	Istore}, /* 1522 */
+	[Clsx+51]	{ldstex, "STLXP", 	Istore}, /* 1523 */
+	[Clsx+52]	{ldstex, "LDXR",  	 Iload}, /* 1524 */
+	[Clsx+53]	{ldstex, "LDAXR", 	 Iload}, /* 1525 */
+	[Clsx+54]	{ldstex, "LDXP",  	 Iload}, /* 1526 */
+	[Clsx+55]	{ldstex, "LDAXP", 	 Iload}, /* 1527 */
+	[Clsx+57]	{ldstex, "STLR",  	 Iload}, /* 1529 */
+	[Clsx+61]	{ldstex, "STLR",  	 Iload}, /* 1533 */
+
+	/* load/store no-alloc pair (off) */
+	[Clsnp+ 0]	{ldstnoallocp, "STNP",  	Istore}, /* 1536 */
+	[Clsnp+ 1]	{ldstnoallocp, "LDNP",  	 Iload}, /* 1537 */
+	[Clsnp+ 8]	{ldstnoallocp, "STNP",  	Istore}, /* 1544 */
+	[Clsnp+ 9]	{ldstnoallocp, "LDNP",  	 Iload}, /* 1545 */
+
+	/* load/store reg (imm post-index) */
+	[Clspos+ 0]	{ldstregimmpost, "STRB",  	Istore}, /* 1600 */
+	[Clspos+ 1]	{ldstregimmpost, "LDRB",  	 Iload}, /* 1601 */
+	[Clspos+ 2]	{ldstregimmpost, "LDRSB", 	 Iload}, /* 1602 */
+	[Clspos+ 3]	{ldstregimmpost, "LDRSB", 	 Iload}, /* 1603 */
+	[Clspos+ 8]	{ldstregimmpost, "STRH",  	Istore}, /* 1608 */
+	[Clspos+ 9]	{ldstregimmpost, "LDRH",  	 Iload}, /* 1609 */
+	[Clspos+10]	{ldstregimmpost, "LDRSH", 	 Iload}, /* 1610 */
+	[Clspos+11]	{ldstregimmpost, "LDRSH", 	 Iload}, /* 1611 */
+	[Clspos+16]	{ldstregimmpost, "STR",   	Istore}, /* 1616 */
+	[Clspos+17]	{ldstregimmpost, "LDR",   	 Iload}, /* 1617 */
+	[Clspos+18]	{ldstregimmpost, "LDRSW", 	 Iload}, /* 1618 */
+	[Clspos+24]	{ldstregimmpost, "STR",   	Istore}, /* 1624 */
+	[Clspos+25]	{ldstregimmpost, "LDR",   	 Iload}, /* 1625 */
+
+	/* load/store reg (imm pre-index) */
+	[Clspre+ 0]	{ldstregimmpre, "STRB",  	Istore}, /* 1664 */
+	[Clspre+ 1]	{ldstregimmpre, "LDRB",  	 Iload}, /* 1665 */
+	[Clspre+ 2]	{ldstregimmpre, "LDRSB", 	 Iload}, /* 1666 */
+	[Clspre+ 3]	{ldstregimmpre, "LDRSB", 	 Iload}, /* 1667 */
+	[Clspre+ 8]	{ldstregimmpre, "STRH",  	Istore}, /* 1672 */
+	[Clspre+ 9]	{ldstregimmpre, "LDRH",  	 Iload}, /* 1673 */
+	[Clspre+10]	{ldstregimmpre, "LDRSH", 	 Iload}, /* 1674 */
+	[Clspre+11]	{ldstregimmpre, "LDRSH", 	 Iload}, /* 1675 */
+	[Clspre+16]	{ldstregimmpre, "STR",   	Istore}, /* 1680 */
+	[Clspre+17]	{ldstregimmpre, "LDR",   	 Iload}, /* 1681 */
+	[Clspre+18]	{ldstregimmpre, "LDRSW", 	 Iload}, /* 1682 */
+	[Clspre+24]	{ldstregimmpre, "STR",   	Istore}, /* 1688 */
+	[Clspre+25]	{ldstregimmpre, "LDR",   	 Iload}, /* 1689 */
+
+	/* load/store reg (off) */
+	[Clso+ 0]	{ldstregoff, "STRB",  	Istore}, /* 1728 */
+	[Clso+ 1]	{ldstregoff, "LDRB",  	 Iload}, /* 1729 */
+	[Clso+ 2]	{ldstregoff, "LDRSB", 	 Iload}, /* 1730 */
+	[Clso+ 3]	{ldstregoff, "LDRSB", 	 Iload}, /* 1731 */
+	[Clso+ 8]	{ldstregoff, "STRH",  	Istore}, /* 1736 */
+	[Clso+ 9]	{ldstregoff, "LDRH",  	 Iload}, /* 1737 */
+	[Clso+10]	{ldstregoff, "LDRSH", 	 Iload}, /* 1738 */
+	[Clso+11]	{ldstregoff, "LDRSH", 	 Iload}, /* 1739 */
+	[Clso+16]	{ldstregoff, "STR",   	Istore}, /* 1744 */
+	[Clso+17]	{ldstregoff, "LDR",   	 Iload}, /* 1745 */
+	[Clso+24]	{ldstregoff, "STR",   	Istore}, /* 1752 */
+	[Clso+25]	{ldstregoff, "LDR",   	 Iload}, /* 1753 */
+	[Clso+26]	{ldstregoff, "PRFM",  	 Iload}, /* 1754 */
+
+	/* load/store reg (unpriv) */
+	[Clsu+ 0]	{ldstregupriv, "STTRB", 	Istore}, /* 1792 */
+	[Clsu+ 1]	{ldstregupriv, "LDTRB", 	 Iload}, /* 1793 */
+	[Clsu+ 2]	{ldstregupriv, "LDTRSB",	 Iload}, /* 1794 */
+	[Clsu+ 3]	{ldstregupriv, "LDTRSB",	 Iload}, /* 1795 */
+	[Clsu+ 8]	{ldstregupriv, "STTRH", 	Istore}, /* 1800 */
+	[Clsu+ 9]	{ldstregupriv, "LDTRH", 	 Iload}, /* 1801 */
+	[Clsu+10]	{ldstregupriv, "LDTRSH",	 Iload}, /* 1802 */
+	[Clsu+11]	{ldstregupriv, "LDTRSH",	 Iload}, /* 1803 */
+	[Clsu+16]	{ldstregupriv, "STTR",  	Istore}, /* 1808 */
+	[Clsu+17]	{ldstregupriv, "LDTR",  	 Iload}, /* 1809 */
+	[Clsu+18]	{ldstregupriv, "LDTRSW",	 Iload}, /* 1810 */
+	[Clsu+24]	{ldstregupriv, "STTR",  	Istore}, /* 1816 */
+	[Clsu+25]	{ldstregupriv, "LDTR",  	 Iload}, /* 1817 */
+
+	/* load/store reg (unscaled imm) */
+	[Clsuci+ 0]	{ldstreguscaleimm, "STURB", 	Istore}, /* 1856 */
+	[Clsuci+ 1]	{ldstreguscaleimm, "LDURB", 	 Iload}, /* 1857 */
+	[Clsuci+ 2]	{ldstreguscaleimm, "LDURSB",	 Iload}, /* 1858 */
+	[Clsuci+ 3]	{ldstreguscaleimm, "LDURSB",	 Iload}, /* 1859 */
+	[Clsuci+ 8]	{ldstreguscaleimm, "STURH", 	Istore}, /* 1864 */
+	[Clsuci+ 9]	{ldstreguscaleimm, "LDURH", 	 Iload}, /* 1865 */
+	[Clsuci+10]	{ldstreguscaleimm, "LDURSH",	 Iload}, /* 1866 */
+	[Clsuci+11]	{ldstreguscaleimm, "LDURSH",	 Iload}, /* 1867 */
+	[Clsuci+16]	{ldstreguscaleimm, "STUR",  	Istore}, /* 1872 */
+	[Clsuci+17]	{ldstreguscaleimm, "LDUR",  	 Iload}, /* 1873 */
+	[Clsuci+18]	{ldstreguscaleimm, "LDURSW",	 Iload}, /* 1874 */
+	[Clsuci+24]	{ldstreguscaleimm, "STUR",  	Istore}, /* 1880 */
+	[Clsuci+25]	{ldstreguscaleimm, "LDUR",  	 Iload}, /* 1881 */
+	[Clsuci+26]	{ldstreguscaleimm, "PRFUM", 	 Iload}, /* 1882 */
+
+	/* load/store reg (unsigned imm) */
+	[Clsusi+ 0]	{ldstregusignimm, "STRB",  	Istore}, /* 1920 */
+	[Clsusi+ 1]	{ldstregusignimm, "LDRB",  	 Iload}, /* 1921 */
+	[Clsusi+ 2]	{ldstregusignimm, "LDRSB", 	 Iload}, /* 1922 */
+	[Clsusi+ 3]	{ldstregusignimm, "LDRSB", 	 Iload}, /* 1923 */
+	[Clsusi+ 8]	{ldstregusignimm, "STRH",  	Istore}, /* 1928 */
+	[Clsusi+ 9]	{ldstregusignimm, "LDRH",  	 Iload}, /* 1929 */
+	[Clsusi+10]	{ldstregusignimm, "LDRSH", 	 Iload}, /* 1930 */
+	[Clsusi+11]	{ldstregusignimm, "LDRSH", 	 Iload}, /* 1931 */
+	[Clsusi+16]	{ldstregusignimm, "STR",   	Istore}, /* 1936 */
+	[Clsusi+17]	{ldstregusignimm, "LDR",   	 Iload}, /* 1937 */
+	[Clsusi+18]	{ldstregusignimm, "LDRSW", 	 Iload}, /* 1938 */
+	[Clsusi+24]	{ldstregusignimm, "STR",   	Istore}, /* 1944 */
+	[Clsusi+25]	{ldstregusignimm, "LDR",   	 Iload}, /* 1945 */
+	[Clsusi+26]	{ldstregusignimm, "PRFM",  	Istore}, /* 1946 */
+
+	/* load/store reg-pair (off) */
+	[Clsrpo+ 0]	{ldstregpoff, "STP",   	Istore}, /* 1984 */
+	[Clsrpo+ 1]	{ldstregpoff, "LDP",   	 Iload}, /* 1985 */
+	[Clsrpo+ 5]	{ldstregpoff, "LDPSW", 	 Iload}, /* 1989 */
+	[Clsrpo+ 8]	{ldstregpoff, "STP",   	 Iload}, /* 1992 */
+	[Clsrpo+ 9]	{ldstregpoff, "LDP",   	 Iload}, /* 1993 */
+
+	/* load/store reg-pair (post-index) */
+	[Clsppo+ 0]	{ldstregppost, "STP",   	Istore}, /* 2048 */
+	[Clsppo+ 1]	{ldstregppost, "LDP",   	 Iload}, /* 2049 */
+	[Clsppo+ 5]	{ldstregppost, "LDPSW", 	 Iload}, /* 2053 */
+	[Clsppo+ 8]	{ldstregppost, "STP",   	Istore}, /* 2056 */
+	[Clsppo+ 9]	{ldstregppost, "LDP",   	 Iload}, /* 2057 */
+
+	/* load/store reg-pair (pre-index) */
+	[Clsppr+ 0]	{ldstregppre, "STP",   	Istore}, /* 2112 */
+	[Clsppr+ 1]	{ldstregppre, "LDP",   	 Iload}, /* 2113 */
+	[Clsppr+ 5]	{ldstregppre, "LDPSW", 	 Iload}, /* 2117 */
+	[Clsppr+ 8]	{ldstregppre, "STP",   	Istore}, /* 2120 */
+	[Clsppr+ 9]	{ldstregppre, "LDP",   	 Iload}, /* 2121 */
+
+	{ 0 }
+};
+
 void
 run(void)
 {
