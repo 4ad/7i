@@ -397,6 +397,29 @@ run(void)
 	}while(--count);
 }
 
+void
+ilock(int)
+{
+}
+
+void
+undef(ulong ir)
+{
+/*	Bprint(bioout, "op=%d op2=%d op3=%d\n", ir>>30, (ir>>21)&0x7, (ir>>19)&0x3f); */
+	Bprint(bioout, "illegal_instruction IR #%.8lux (op=%ld/%ld, pc=#%.8lux)\n", ir, getop(ir), getxo(ir), reg.pc);
+	if(ci && ci->name && ci->func==0)
+		Bprint(bioout, "(%s not yet implemented)\n", ci->name);
+	longjmp(errjmp, 0);
+}
+
+void
+unimp(ulong ir)
+{
+/*	Bprint(bioout, "op=%d op2=%d op3=%d\n", ir>>30, (ir>>21)&0x7, (ir>>19)&0x3f); */
+	Bprint(bioout, "illegal_instruction IR #%.8lux (op=%ld/%ld, pc=#%.8lux) %s not in MPC601\n", ir, getop(ir), getxo(ir), reg.pc, ci->name?ci->name: "-");
+	longjmp(errjmp, 0);
+}
+
 /* compare and branch
 params: imm19<23,5> Rt<4,0> 
 ops: sf<31> op<24> 
@@ -1100,27 +1123,4 @@ ldstregppre(ulong ir)
 
 	getlsppr(ir);
 	USED(opc, V, L, imm7, Rt2, Rn, Rt);
-}
-
-void
-ilock(int)
-{
-}
-
-void
-undef(ulong ir)
-{
-/*	Bprint(bioout, "op=%d op2=%d op3=%d\n", ir>>30, (ir>>21)&0x7, (ir>>19)&0x3f); */
-	Bprint(bioout, "illegal_instruction IR #%.8lux (op=%ld/%ld, pc=#%.8lux)\n", ir, getop(ir), getxo(ir), reg.pc);
-	if(ci && ci->name && ci->func==0)
-		Bprint(bioout, "(%s not yet implemented)\n", ci->name);
-	longjmp(errjmp, 0);
-}
-
-void
-unimp(ulong ir)
-{
-/*	Bprint(bioout, "op=%d op2=%d op3=%d\n", ir>>30, (ir>>21)&0x7, (ir>>19)&0x3f); */
-	Bprint(bioout, "illegal_instruction IR #%.8lux (op=%ld/%ld, pc=#%.8lux) %s not in MPC601\n", ir, getop(ir), getxo(ir), reg.pc, ci->name?ci->name: "-");
-	longjmp(errjmp, 0);
 }
