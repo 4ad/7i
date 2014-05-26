@@ -401,7 +401,7 @@ run(void)
 
 /* Font
 getxo returns the "super-opcode" (xo) of an instruction. The xo is
-the bitwise OR between the class opcode (see file.c:/^classes) and
+the bitwise OR between the class opcode (see arm64.h:/classes) and
 the number constructed from the class-select bits (the bullets in
 the table below). The xo can index the itab table.
 
