@@ -1160,9 +1160,27 @@ void
 ldstreg(ulong ir)
 {
 	ulong opc, V, imm19, Rt;
+	long addr;
 
 	getlsr(ir);
-	USED(opc, V);
+	USED(V);
+	addr = reg.pc;
+	if(imm19 >> 18)
+		addr += ~0 | imm19;
+	else
+		addr += imm19;
+	switch(opc) {
+	case 0:	/* 32-bit LDR */
+		reg.r[Rt] = getmem_w(addr);
+		break;
+	case 1:	/* 64-bit LDR */
+		reg.r[Rt] = getmem_v(addr);
+		break;
+	case 2:	/*LDRSW */
+		break;
+	case 3:	/*PRFM */
+		break;
+	}
 	if(trace)
 		itrace("%s\timm19=%d, Rt=%d", ci->name, imm19, Rt);
 }
