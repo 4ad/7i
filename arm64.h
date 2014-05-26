@@ -76,7 +76,7 @@ struct Registers
 	ulong	pc;
 	ulong	ir;
 	Inst	*ip;
-	long	r[32];
+	vlong	r[32];
 	ulong	ctr;
 	ulong	cr;
 	ulong	xer;
