@@ -236,7 +236,7 @@ procinit(int pid)
 	seginit(m, s, 0, vastart, vaend);
 
 	reg.pc = greg(m, REGOFF(pc));
-	reg.r[1] = greg(m, REGOFF(sp));
+	reg.r[31] = greg(m, REGOFF(sp));
 	reg.r[2] = greg(m, REGOFF(r2));
 	reg.r[30] = greg(m, REGOFF(r30));
 
