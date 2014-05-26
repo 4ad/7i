@@ -1165,10 +1165,10 @@ ldstreg(ulong ir)
 	getlsr(ir);
 	USED(V);
 	addr = reg.pc;
-	if(imm19 >> 18)
-		addr += ~0 | imm19;
+	if(imm19 >> 16)
+		addr += ~0 | imm19<<2;
 	else
-		addr += imm19;
+		addr += imm19<<2;
 	switch(opc) {
 	case 0:	/* 32-bit LDR */
 		reg.r[Rt] = getmem_w(addr);
