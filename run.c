@@ -773,9 +773,30 @@ void
 addsubimm(ulong ir)
 {
 	ulong sf, op, S, shift, imm12, Rn, Rd;
+	ulong imm;
+	uvlong r;
 
 	getai(ir);
-	USED(sf, op, S);
+	if(shift)
+		imm = imm12<<12;
+	else
+		imm = imm12;
+	if(sf)
+		r = reg.r[Rn];
+	else
+		r = (ulong)reg.r[Rn];
+	switch(op) {
+	case 0:	/* add */
+		r += imm;
+		break;
+	case 1: /* sub */
+		r -= imm;
+		break;
+	}
+	reg.r[Rd] = r;
+	if(S)
+		; // set flags
+
 	if(trace)
 		itrace("%s\tshift=%d, imm12=%d, Rn=%d, Rd=%d", ci->name, shift, imm12, Rn, Rd);
 }
