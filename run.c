@@ -5,6 +5,10 @@
 #define Extern extern
 #include "arm64.h"
 
+vlong	doshift(ulong, vlong, ulong, ulong);
+vlong	shift64(vlong, ulong, ulong);
+long	shift32(long, ulong, ulong);
+
 void	cmpb(ulong);
 void	condb(ulong);
 void	syscall(ulong);
@@ -377,6 +381,54 @@ Inst itab[] =
 
 	{ 0 }
 };
+
+/* doshift, not shift, because we want to preserve names in the ARM64
+manual, and shift is used in many instruction encodings as a field
+name.*/
+vlong
+doshift(ulong sf, vlong v, ulong typ, ulong bits)
+{
+	if(bits == 0)
+		return v;
+	if(sf == 1) /* 64-bit */
+		return shift64(v, typ, bits);
+	/* shift32 returns long, so it will be sign extended. */
+	return shift32((uvlong)v, typ, bits);
+}
+
+vlong
+shift64(vlong v, ulong typ, ulong bits)
+{
+	switch(typ) {
+	case 0:	/* logical left */
+		return v << bits;
+	case 1: /* logical right */
+		return (uvlong)v >> bits;
+	case 2:	/* arith right */
+		return v >> bits;
+	case 3:	/* rotate right */
+		return (v << (64-bits)) | ((uvlong)v >> bits);
+	}
+	/* not reached */
+	return 0xbad0ULL << 60;
+}
+
+long
+shift32(long v, ulong typ, ulong bits)
+{
+	switch(typ) {
+	case 0:	/* logical left */
+		return v << bits;
+	case 1: /* logical right */
+		return (ulong)v >> bits;
+	case 2:	/* arith right */
+		return v >> bits;
+	case 3:	/* rotate right */
+		return (v << (32-bits)) | ((ulong)v >> bits);
+	}
+	/* not reached */
+	return 0xbad1U << 28;
+}
 
 void
 run(void)
@@ -1053,9 +1105,45 @@ void
 logsreg(ulong ir)
 {
 	ulong sf, opc, shift, N, Rm, imm6, Rn, Rd;
+	uvlong Xn, m, r;
+	ulong Wn, m32;
 
 	getalsr(ir);
-	USED(sf, opc, N);
+	m = doshift(sf, reg.r[Rm], shift, imm6);
+	m32 = (ulong)m;
+	if(Rn == 31)
+		Xn = 0;
+	else
+		Xn = reg.r[Rn];
+	Wn = (ulong)Xn;
+	SET(r);	/* silence the compiler */
+	switch(opc<<1|N) {
+	case 0:	/* AND */
+		if(sf == 1)
+			r = Xn & m;
+		else
+			r = Wn & m32;
+		break;
+	case 1:	/* BIC */
+		break;
+	case 2:	/* ORR */
+		if(sf == 1)
+			r = Xn | m;
+		else
+			r = Wn | m32;
+		break;
+	case 3:	/* ORN */
+		break;
+	case 4:	/* EOR */
+		break;
+	case 5:	/* EON */
+		break;
+	case 6:	/* ANDS */
+		break;
+	case 7:	/* BICS */
+		break;
+	}
+	reg.r[Rd] = r;
 	if(trace)
 		itrace("%s\tshift=%d, Rm=%d, imm6=%d, Rn=%d, Rd=%d", ci->name, shift, Rm, imm6, Rn, Rd);
 }
