@@ -240,11 +240,11 @@ procinit(int pid)
 	reg.r[2] = greg(m, REGOFF(r2));
 	reg.r[30] = greg(m, REGOFF(r30));
 
-	for(i = 0; i < 32; i++)
+	for(i = 0; i < 31; i++)
 		reg.r[i] = greg(m, roff[i-1]);
 
 	s = &memory.seg[Stack];
-	vastart = reg.r[1] & ~(BY2PG-1);
+	vastart = reg.r[31] & ~(BY2PG-1);
 	seginit(m, s, (vastart-s->base)/BY2PG, vastart, STACKTOP);
 	close(m);
 	Bprint(bioout, "7i\n"); 
@@ -277,7 +277,7 @@ reset(void)
 void
 initstk(int argc, char *argv[])
 {
-	ulong size, sp, ap, tos;
+	uvlong size, sp, ap, tos;
 	int i;
 	char *p;
 
@@ -301,7 +301,7 @@ initstk(int argc, char *argv[])
 
 	sp -= size;
 	sp &= ~7;
-	reg.r[1] = sp;
+	reg.r[31] = sp;
 	reg.r[3] = tos;		/* Plan 9 profiling clock, etc. */
 
 	/* Push argc */

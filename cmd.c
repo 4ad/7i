@@ -533,7 +533,7 @@ setreg(char *addr, char *cp)
 		return;
 	}
 	if(strcmp(cp, "sp") == 0) {
-		reg.r[1] = dot;
+		reg.r[31] = dot;
 		return;
 	}
 	if(strcmp(cp, "lr") == 0) {

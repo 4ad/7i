@@ -64,7 +64,7 @@ stktrace(int modif)
 	char buf[512];
 
 	pc = reg.pc;
-	sp = reg.r[1];
+	sp = reg.r[31];
 	i = 0;
 	while (findsym(pc, CTEXT, &s)) {
 		if(strcmp(STARTSYM, s.name) == 0) {

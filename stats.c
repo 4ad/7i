@@ -141,7 +141,7 @@ segsum(void)
 	Bprint(bioout, "      Base     End      Resident References\n");
 	for(i = 0; i < Nseg; i++) {
 		s = &memory.seg[i];
-		Bprint(bioout, "%-5s %.8lux %.8lux %-8d %-8d\n",
+		Bprint(bioout, "%-5s %.16llux %.16llux %-8d %-8d\n",
 				stype[i], s->base, s->end, s->rss*BY2PG, s->refs);
 	}
 }

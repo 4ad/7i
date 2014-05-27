@@ -107,10 +107,10 @@ enum
 struct Segment
 {
 	short	type;
-	ulong	base;
-	ulong	end;
-	ulong	fileoff;
-	ulong	fileend;
+	uvlong	base;
+	uvlong	end;
+	uvlong	fileoff;
+	uvlong	fileend;
 	int	rss;
 	int	refs;
 	uchar	**table;
@@ -202,10 +202,8 @@ extern		ulong bits[];
 #define	BY2PG		4096
 #define BY2WD		4
 #define UTZERO		0x1000
-#define TSTKSIZ		32
-#define TSTACKTOP	0x20000000
-#define STACKTOP	(TSTACKTOP-TSTKSIZ*BY2PG)
-#define STACKSIZE	(4*1024*1024)
+#define STACKTOP	0x00007ffffffff000ull
+#define STACKSIZE	0x10000
 
 #define PROFGRAN	4
 
