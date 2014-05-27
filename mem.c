@@ -8,13 +8,13 @@
 extern ulong	textbase;
 
 ulong
-ifetch(ulong addr)
+ifetch(uvlong addr)
 {
 	uchar *va;
 	ulong px;
 
 	if(addr&3) {
-		Bprint(bioout, "instruction_address_not_aligned [addr %.8lux]\n", addr);
+		Bprint(bioout, "instruction_address_not_aligned [addr %.16llux]\n", addr);
 		longjmp(errjmp, 0);
 	}
 
@@ -32,7 +32,7 @@ ifetch(ulong addr)
 }
 
 ulong
-getmem_4(ulong addr)
+getmem_4(uvlong addr)
 {
 	ulong val;
 	int i;
@@ -44,7 +44,7 @@ getmem_4(ulong addr)
 }
 
 ulong
-getmem_2(ulong addr)
+getmem_2(uvlong addr)
 {
 	ulong val;
 	int i;
@@ -56,13 +56,13 @@ getmem_2(ulong addr)
 }
 
 uvlong
-getmem_v(ulong addr)
+getmem_v(uvlong addr)
 {
 	return ((uvlong)getmem_w(addr+4) << 32) | getmem_w(addr);
 }
 
 ulong
-getmem_w(ulong addr)
+getmem_w(uvlong addr)
 {
 	uchar *va;
 	ulong w;
@@ -85,7 +85,7 @@ getmem_w(ulong addr)
 }
 
 ushort
-getmem_h(ulong addr)
+getmem_h(uvlong addr)
 {
 	uchar *va;
 	ulong w;
@@ -108,7 +108,7 @@ getmem_h(ulong addr)
 }
 
 uchar
-getmem_b(ulong addr)
+getmem_b(uvlong addr)
 {
 	uchar *va;
 
@@ -121,19 +121,19 @@ getmem_b(ulong addr)
 }
 
 void
-putmem_v(ulong addr, uvlong data)
+putmem_v(uvlong addr, uvlong data)
 {
 	putmem_w(addr, data);	/* two stages, to catch brkchk */
 	putmem_w(addr+4, data>>32);
 }
 
 void
-putmem_w(ulong addr, ulong data)
+putmem_w(uvlong addr, ulong data)
 {
 	uchar *va;
 
 	if(addr&3) {
-		Bprint(bioout, "mem_address_not_aligned [store addr %.8lux]\n", addr);
+		Bprint(bioout, "mem_address_not_aligned [store addr %.16llux]\n", addr);
 		longjmp(errjmp, 0);
 	}
 
@@ -149,7 +149,7 @@ putmem_w(ulong addr, ulong data)
 }
 
 void
-putmem_b(ulong addr, uchar data)
+putmem_b(uvlong addr, uchar data)
 {
 	uchar *va;
 
@@ -161,12 +161,12 @@ putmem_b(ulong addr, uchar data)
 }
 
 void
-putmem_h(ulong addr, short data)
+putmem_h(uvlong addr, short data)
 {
 	uchar *va;
 
 	if(addr&1) {
-		Bprint(bioout, "mem_address_not_aligned [store addr %.8lux]\n", addr);
+		Bprint(bioout, "mem_address_not_aligned [store addr %.16llux]\n", addr);
 		longjmp(errjmp, 0);
 	}
 
@@ -220,7 +220,7 @@ memio(char *mb, ulong mem, int size, int dir)
 }
 
 void *
-vaddr(ulong addr)
+vaddr(uvlong addr)
 {
 	Segment *s, *es;
 	int off, foff, l, n;
@@ -266,7 +266,7 @@ vaddr(ulong addr)
 			}
 		}
 	}
-	Bprint(bioout, "data_access_MMU_miss [addr 0x%.8lux]\n", addr);
+	Bprint(bioout, "data_access_MMU_miss [addr 0x%.16llux]\n", addr);
 	longjmp(errjmp, 0);
 	return 0;		/*to stop compiler whining*/
 }
