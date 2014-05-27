@@ -795,7 +795,7 @@ addsubimm(ulong ir)
 	}
 	reg.r[Rd] = r;
 	if(S)
-		; // set flags
+		undef(ir);
 
 	if(trace)
 		itrace("%s\tshift=%d, imm12=%d, Rn=%d, Rd=%d", ci->name, shift, imm12, Rn, Rd);
@@ -1145,24 +1145,14 @@ logsreg(ulong ir)
 		else
 			r = Wn & m32;
 		break;
-	case 1:	/* BIC */
-		break;
 	case 2:	/* ORR */
 		if(sf == 1)
 			r = Xn | m;
 		else
 			r = Wn | m32;
 		break;
-	case 3:	/* ORN */
-		break;
-	case 4:	/* EOR */
-		break;
-	case 5:	/* EON */
-		break;
-	case 6:	/* ANDS */
-		break;
-	case 7:	/* BICS */
-		break;
+	default:
+		undef(ir);
 	}
 	reg.r[Rd] = r;
 	if(trace)
@@ -1197,10 +1187,8 @@ ldstreg(ulong ir)
 	case 1:	/* 64-bit LDR */
 		reg.r[Rt] = getmem_v(addr);
 		break;
-	case 2:	/*LDRSW */
-		break;
-	case 3:	/*PRFM */
-		break;
+	default:
+		undef(ir);
 	}
 	if(trace)
 		itrace("%s\timm19=%d, Rt=%d", ci->name, imm19, Rt);
