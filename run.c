@@ -5,10 +5,12 @@
 #define Extern extern
 #include "arm64.h"
 
+ulong	s32(ulong);
+ulong	s64(uvlong);
+char	ov32(ulong, ulong, ulong);
+char	ov64(uvlong, uvlong, uvlong);
 void	nz(vlong);
-
 vlong	sext(ulong, char);
-
 vlong	doshift(ulong, vlong, ulong, ulong);
 vlong	shift64(vlong, ulong, ulong);
 long	shift32(long, ulong, ulong);
@@ -384,6 +386,34 @@ Inst itab[] =
 
 	{ 0 }
 };
+
+ulong
+s32(ulong v)
+{
+	return v >> 31;
+}
+
+ulong
+s64(uvlong v)
+{
+	return v >> 63;
+}
+
+char
+ov32(ulong a, ulong b, ulong r)
+{
+	if((s32(a)==s32(b)) && (s32(r) != s32(a)))
+		return 1;
+	return 0;
+}
+
+char
+ov64(uvlong a, uvlong b, uvlong r)
+{
+	if((s64(a)==s64(b)) && (s64(r)!=s64(a)))
+		return 1;
+	return 0;
+}
 
 void
 nz(vlong v)
@@ -968,6 +998,7 @@ addsubsreg(ulong ir)
 	ulong sf, op, S, shift, Rm, imm6, Rn, Rd;
 	uvlong Xn, m, r;
 	ulong Wn, m32;
+	char ov;
 
 	getasr(ir);
 	m = doshift(sf, reg.r[Rm], shift, imm6);
@@ -977,24 +1008,34 @@ addsubsreg(ulong ir)
 	else
 		Xn = reg.r[Rn];
 	Wn = (ulong)Xn;
-	SET(r);	/* silence the compiler */
-	switch(op) {
-	case 0:	/* ADD, ADDS */
-		if(sf == 1)
-			r = Xn + m;
-		else
+	SET(r, ov);	/* silence the compiler */
+	switch(sf) {
+	case 0:	/* 32-bit */
+		switch(op) {
+		case 1: /* SUB, SUBS */
+			m32 = ~m32 + 1;
+			/* fallthrough */
+		case 0:	/* ADD, ADDS */
 			r = Wn + m32;
-		break;
-	case 1: /* SUB, SUBS */
-		if(sf == 1)
-			r = Xn - m;
-		else
-			r = Wn - m32;
+			ov = ov32(Xn, m32, r);
+			break;
+		}
+	case 1:	/* 64-bit */
+		switch(op) {
+		case 1: /* SUB, SUBS */
+			m = ~m + 1;
+			/* fallthrough */
+		case 0:	/* ADD, ADDS */
+			r = Xn + m;
+			ov = ov64(Xn, m, r);
+			break;
+		}
 		break;
 	}
 	reg.r[Rd] = r;
 	if(S) {	/* flags */
 		nz(r);
+		reg.pstate.V = ov;
 	}
 	if(trace)
 		itrace("%s\tshift=%d, Rm=%d, imm6=%d, Rn=%d, Rd=%d", ci->name, shift, Rm, imm6, Rn, Rd);
