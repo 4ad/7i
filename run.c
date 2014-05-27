@@ -1455,6 +1455,22 @@ ldstregusignimm(ulong ir)
 			break;
 		}
 		break;
+	case 1: /* immediate loads */
+		switch(size) {
+		case 0:	/* LDRB */
+			reg.r[Rt] = getmem_b(addr);
+			break;
+		case 1:	/* LDRH */
+			reg.r[Rt] = getmem_h(addr);
+			break;
+		case 2:	/* 32-bit LDR */
+			reg.r[Rt] = getmem_w(addr);
+			break;
+		case 3:	/* 64-bit LDR */
+			reg.r[Rt] = getmem_v(addr);
+			break;
+		}
+		break;
 	default:
 		undef(ir);
 	}
