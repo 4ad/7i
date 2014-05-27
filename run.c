@@ -1187,7 +1187,7 @@ ldstreg(ulong ir)
 	USED(V);
 	addr = reg.pc;
 	if(imm19 >> 16)
-		addr += ~0 | imm19<<2;
+		addr += ~((1<<19)-1) | imm19<<2;
 	else
 		addr += imm19<<2;
 	switch(opc) {
