@@ -77,6 +77,9 @@ struct Registers
 	ulong	ir;
 	Inst	*ip;
 	vlong	r[32];
+	struct {
+		char	N, Z, C, V;
+	} flags;
 	double	fd[32];
 };
 
