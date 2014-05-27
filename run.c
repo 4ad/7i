@@ -751,9 +751,9 @@ uncondbimm(ulong ir)
 	getubi(ir);
 	if(op)	/* BL */
 		reg.r[30] = reg.pc + 4;
-	reg.pc += sext(imm26<<2, 26);
 	if(trace)
 		itrace("%s\timm26=%d", ci->name, imm26);
+	reg.pc += sext(imm26<<2, 26);
 }
 
 /* unconditional branch reg
@@ -770,6 +770,8 @@ uncondbreg(ulong ir)
 
 	getubr(ir);
 	USED(op2);
+	if(trace)
+		itrace("%s\tRn=%d", ci->name, Rn);
 	switch(opc) {
 	case 2:	/* RET */
 		reg.pc = reg.r[30];
@@ -777,8 +779,6 @@ uncondbreg(ulong ir)
 	default:
 		undef(ir);
 	}
-	if(trace)
-		itrace("%s\tRn=%d", ci->name, Rn);
 }
 
 /* add/sub imm
