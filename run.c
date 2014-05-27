@@ -1504,6 +1504,15 @@ ldstregusignimm(ulong ir)
 			break;
 		}
 		break;
+	case 2:	/* signed loads */
+		switch(size) {
+		case 2:	/* LDRSW */
+			reg.r[Rt] = sext(getmem_w(addr), 32);
+			break;
+		default:
+			undef(ir);
+		}
+		break;
 	default:
 		undef(ir);
 	}
