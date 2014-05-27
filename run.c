@@ -1331,10 +1331,27 @@ void
 ldstregimmpre(ulong ir)
 {
 	ulong size, V, opc, imm9, Rn, Rt;
+	uvlong addr;
 
 	getlspre(ir);
-	USED(size, V, opc);
-	undef(ir);
+	USED(V);
+	/* pre-index calculation */
+	addr = reg.r[Rn] + sext(imm9, 9);
+	switch(opc) {
+	case 0:	/* stores */
+		switch(size) {
+		case 3:	/* 64-bit STR */
+			putmem_v(addr, reg.r[Rt]);
+			break;
+		default:
+			undef(ir);	
+		}
+		break;
+	default:
+		undef(ir);
+	}
+	/* write-back */
+	reg.r[Rn] = addr;
 	if(trace)
 		itrace("%s\timm9=%d, Rn=%d, Rt=%d", ci->name, imm9, Rn, Rt);
 }
