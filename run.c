@@ -747,7 +747,7 @@ uncondbimm(ulong ir)
 	getubi(ir);
 	if(op)	/* BL */
 		reg.r[30] = reg.pc + 4;
-	reg.pc = reg.pc + sext(imm26<<2, 26);
+	reg.pc += sext(imm26<<2, 26);
 	if(trace)
 		itrace("%s\timm26=%d", ci->name, imm26);
 }
@@ -765,7 +765,14 @@ uncondbreg(ulong ir)
 	ulong opc, op2, Rn;
 
 	getubr(ir);
-	USED(opc, op2);
+	USED(op2);
+	switch(opc) {
+	case 2:	/* RET */
+		reg.pc = reg.r[30];
+		break;
+	default:
+		undef(ir);
+	}
 	if(trace)
 		itrace("%s\tRn=%d", ci->name, Rn);
 }
