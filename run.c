@@ -910,8 +910,33 @@ bitfield(ulong ir)
 	ulong sf, opc, N, immr, imms, Rn, Rd;
 
 	getab(ir);
-	USED(sf, opc, N);
-	undef(ir);
+	USED(N);
+	switch(sf) {
+	case 0: /* 32-bit */
+		switch(opc) {
+		case 2:	/* UBFM */
+			if(imms >= immr)
+				reg.r[Rd] = ((ulong)reg.r[Rn]>>immr)&((1<<(imms-immr+1))-1);
+			else
+				reg.r[Rd] = (reg.r[Rn]&((1<<(imms+1))-1))<<immr;
+			break;
+		default:
+			undef(ir);
+		}
+		break;
+	case 1:	/* 64-bit*/
+		switch(opc) {
+		case 2:	/* UBFM */
+			if(imms >= immr)
+				reg.r[Rd] = ((uvlong)reg.r[Rn]>>immr)&((1<<(imms-immr+1))-1);
+			else
+				reg.r[Rd] = (reg.r[Rn]&((1<<(imms+1))-1))<<(64-immr);
+			break;
+		default:
+			undef(ir);
+		}
+		break;
+	}
 	if(trace)
 		itrace("%s\timmr=%d, imms=%d, Rn=%d, Rd=%d", ci->name, immr, imms, Rn, Rd);
 }
