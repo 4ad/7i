@@ -5,6 +5,7 @@
 #define Extern extern
 #include "arm64.h"
 
+char	runcond(ulong);
 ulong	s32(ulong);
 ulong	s64(uvlong);
 char	ov32(ulong, ulong, ulong);
@@ -387,6 +388,43 @@ Inst itab[] =
 	{ 0 }
 };
 
+char
+runcond(ulong cond)
+{
+	char r;
+
+	SET(r);	/* silence the compiler */
+	switch(cond>>1) {
+	case 0:	/* EQ or NE */
+		r = reg.pstate.Z;
+		break;
+	case 1:	/* CS or CC */
+		r = reg.pstate.C;
+		break;
+	case 2:	/* MI or PL */
+		r = reg.pstate.N;
+		break;
+	case 3:	/* VS or VC */
+		r = reg.pstate.V;
+		break;
+	case 4:	/* HI or LS */
+		r = reg.pstate.C && reg.pstate.Z == 0;
+		break;
+	case 5:	/* GE or LT */
+		r = reg.pstate.N == reg.pstate.V;
+		break;
+	case 6:	/* GT or LE */
+		r = reg.pstate.N == reg.pstate.V && reg.pstate.Z == 0;
+		break;
+	case 7:	/* AL */
+		r = 1;
+		break;
+	}
+	if(cond&1 && (cond != 0xF))
+		r = r ? 0 : 1;
+	return r;
+}
+
 ulong
 s32(ulong v)
 {
@@ -738,12 +776,16 @@ void
 condb(ulong ir)
 {
 	ulong o1, imm19, o0, cond;
+	vlong offset;
 
 	getcb(ir);
-	USED(o0);
-	undef(ir);
+	offset = sext(imm19, 19) << 2;
+	if(o0 != 0 || o1 != 0)
+		undef(ir);
 	if(trace)
 		itrace("%s\to1=%d, imm19=%d, cond=%d", ci->name, o1, imm19, cond);
+	if(runcond(cond))
+		reg.pc += offset - 4;
 }
 
 /* test and branch
@@ -780,7 +822,7 @@ uncondbimm(ulong ir)
 		reg.r[30] = reg.pc + 4;
 	if(trace)
 		itrace("%s\timm26=%d", ci->name, imm26);
-	reg.pc += sext(imm26<<2, 26) - 4;
+	reg.pc += (sext(imm26, 26) << 2) - 4;
 }
 
 /* unconditional branch reg
@@ -996,12 +1038,16 @@ void
 addsubsreg(ulong ir)
 {
 	ulong sf, op, S, shift, Rm, imm6, Rn, Rd;
-	uvlong Xn, m, r;
+	uvlong Xn, Xm, m, r;
 	ulong Wn, m32;
 	char ov;
 
 	getasr(ir);
-	m = doshift(sf, reg.r[Rm], shift, imm6);
+	if(Rm == 31)
+		Xm = 0;
+	else
+		Xm = reg.r[Rm];
+	m = doshift(sf, Xm, shift, imm6);
 	m32 = (ulong)m;
 	if(Rn == 31)
 		Xn = 0;
@@ -1032,7 +1078,8 @@ addsubsreg(ulong ir)
 		}
 		break;
 	}
-	reg.r[Rd] = r;
+	if(Rd != 31)
+		reg.r[Rd] = r;
 	if(S) {	/* flags */
 		nz(r);
 		reg.pstate.V = ov;
@@ -1277,7 +1324,7 @@ ldstreg(ulong ir)
 
 	getlsr(ir);
 	USED(V);
-	addr = reg.pc + sext(imm19<<2, 19);
+	addr = reg.pc + (sext(imm19, 19) << 2);
 	switch(opc) {
 	case 0:	/* 32-bit LDR */
 		reg.r[Rt] = getmem_w(addr);
