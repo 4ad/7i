@@ -1423,9 +1423,31 @@ void
 ldstregusignimm(ulong ir)
 {
 	ulong size, V, opc, imm12, Rn, Rt;
+	uvlong addr;
 
 	getlsusi(ir);
-	USED(size, V, opc);
+	USED(V);
+	addr = reg.r[Rn] + (imm12 << size);
+	switch(opc) {
+	case 0:	/* stores */
+		switch(size) {
+		case 0:	/* STRB */
+			putmem_b(addr, reg.r[Rt]);
+			break;
+		case 1:	/* STRH */
+			putmem_h(addr, reg.r[Rt]);
+			break;
+		case 2:	/* 32-bit STR */
+			putmem_w(addr, reg.r[Rt]);
+			break;
+		case 3:	/* 64-bit STR */
+			putmem_v(addr, reg.r[Rt]);
+			break;
+		}
+		break;
+	default:
+		undef(ir);
+	}
 	if(trace)
 		itrace("%s\timm12=%d, Rn=%d, Rt=%d", ci->name, imm12, Rn, Rt);
 }
