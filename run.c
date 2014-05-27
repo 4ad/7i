@@ -753,7 +753,7 @@ uncondbimm(ulong ir)
 		reg.r[30] = reg.pc + 4;
 	if(trace)
 		itrace("%s\timm26=%d", ci->name, imm26);
-	reg.pc += sext(imm26<<2, 26);
+	reg.pc += sext(imm26<<2, 26) - 4;
 }
 
 /* unconditional branch reg
@@ -774,7 +774,7 @@ uncondbreg(ulong ir)
 		itrace("%s\tRn=%d", ci->name, Rn);
 	switch(opc) {
 	case 2:	/* RET */
-		reg.pc = reg.r[30];
+		reg.pc = reg.r[30] - 4;
 		break;
 	default:
 		undef(ir);
