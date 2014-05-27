@@ -13,7 +13,6 @@ long	shift32(long, ulong, ulong);
 
 void	cmpb(ulong);
 void	condb(ulong);
-void	syscall(ulong);
 void	tb(ulong);
 void	uncondbimm(ulong);
 void	uncondbreg(ulong);
@@ -700,23 +699,6 @@ condb(ulong ir)
 	undef(ir);
 	if(trace)
 		itrace("%s\to1=%d, imm19=%d, cond=%d", ci->name, o1, imm19, cond);
-}
-
-/* system
-params: imm16<20,5> 
-ops: opc<23,21> LL<1,0> 
-	SVC   	opc=0	LL=1	
-*/
-void
-syscall(ulong ir)
-{
-	ulong opc, imm16, LL;
-
-	getsys(ir);
-	USED(opc, LL);
-	undef(ir);
-	if(trace)
-		itrace("%s\timm16=%d", ci->name, imm16);
 }
 
 /* test and branch

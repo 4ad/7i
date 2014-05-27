@@ -133,7 +133,7 @@ void*		erealloc(void*, ulong, ulong);
 void*		vaddr(uvlong);
 void		itrace(char *, ...);
 void		segsum(void);
-void		sc(ulong);
+void	syscall(ulong);
 char*		memio(char*, ulong, int, int);
 ulong		getmem_w(uvlong);
 ulong		ifetch(uvlong);

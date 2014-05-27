@@ -6,9 +6,8 @@
 #define Extern extern
 #include "arm64.h"
 
-
-#define	REGSP	1
-#define	REGRET	3
+#define	REGSP	31
+#define	REGRET	0
 
 #define	ODIRLEN	116	/* compatibility; used in _stat etc. */
 #define	OERRLEN	64	/* compatibility; used in _stat etc. */
@@ -720,20 +719,27 @@ void (*systab[])(void)	={
 	[PWRITE]	syspwrite,
 };
 
+/* system
+params: imm16<20,5> 
+ops: opc<23,21> LL<1,0> 
+	SVC   	opc=0	LL=1	
+*/
 void
-sc(ulong inst)
+syscall(ulong ir)
 {
+	ulong opc, imm16, LL;
 	int call;
 
-	if(inst != ((17<<26)|2))
-		undef(inst);
-	call = reg.r[REGRET];
+	getsys(ir);
+	if(opc != 0 || LL != 1)
+		undef(ir);
+	call = imm16;
 	if(call < 0 || call > PWRITE || systab[call] == nil) {
 		Bprint(bioout, "Bad system call\n");
 		dumpreg();
 	}
 	if(trace)
-		itrace("sc\t(%s)", sysctab[call]);
+		itrace("%s\t(%s)",  ci->name, sysctab[call]);
 
 	(*systab[call])();
 	Bflush(bioout);
