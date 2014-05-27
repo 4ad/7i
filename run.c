@@ -951,18 +951,35 @@ void
 addsubsreg(ulong ir)
 {
 	ulong sf, op, S, shift, Rm, imm6, Rn, Rd;
+	uvlong Xn, m, r;
+	ulong Wn, m32;
 
 	getasr(ir);
-	switch(op<<1|S) {
-	case 0:	/* ADD */
+	m = doshift(sf, reg.r[Rm], shift, imm6);
+	m32 = (ulong)m;
+	if(Rn == 31)
+		Xn = 0;
+	else
+		Xn = reg.r[Rn];
+	Wn = (ulong)Xn;
+	SET(r);	/* silence the compiler */
+	switch(op) {
+	case 0:	/* ADD, ADDS */
+		if(sf == 1)
+			r = Xn + m;
+		else
+			r = Wn + m32;
 		break;
-	case 1:	/* ADDS */
-		break;
-	case 2:	/* SUB */
-		break;
-	case 3:	/* SUBS */
+	case 1: /* SUB, SUBS */
+		if(sf == 1)
+			r = Xn - m;
+		else
+			r = Wn - m32;
 		break;
 	}
+	reg.r[Rd] = r;
+	if(S)	/* flags */
+		undef(ir);
 	if(trace)
 		itrace("%s\tshift=%d, Rm=%d, imm6=%d, Rn=%d, Rd=%d", ci->name, shift, Rm, imm6, Rn, Rd);
 }
