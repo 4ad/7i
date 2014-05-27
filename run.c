@@ -5,6 +5,8 @@
 #define Extern extern
 #include "arm64.h"
 
+void	nz(vlong);
+
 vlong	sext(ulong, char);
 
 vlong	doshift(ulong, vlong, ulong, ulong);
@@ -382,6 +384,19 @@ Inst itab[] =
 
 	{ 0 }
 };
+
+void
+nz(vlong v)
+{
+	if(v < 0)
+		reg.pstate.N = 1;
+	else
+		reg.pstate.N = 0;
+	if(v == 0)
+		reg.pstate.Z = 1;
+	else
+		reg.pstate.Z = 0;
+}
 
 /* sext sign extends a bit-sized number encoded in v to a vlong. */
 vlong
@@ -978,8 +993,9 @@ addsubsreg(ulong ir)
 		break;
 	}
 	reg.r[Rd] = r;
-	if(S)	/* flags */
-		undef(ir);
+	if(S) {	/* flags */
+		nz(r);
+	}
 	if(trace)
 		itrace("%s\tshift=%d, Rm=%d, imm6=%d, Rn=%d, Rd=%d", ci->name, shift, Rm, imm6, Rn, Rd);
 }

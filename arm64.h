@@ -79,7 +79,7 @@ struct Registers
 	vlong	r[32];
 	struct {
 		char	N, Z, C, V;
-	} flags;
+	} pstate;
 	double	fd[32];
 };
 
