@@ -76,7 +76,7 @@ stktrace(int modif)
 		else if (findlocal(&s, FRAMENAME, &f) == 0)
 			break;
 		if (s.type == 'L' || s.type == 'l' || pc <= s.value+4)
-			pc = reg.lr;
+			pc = reg.r[30];
 		else pc = getmem_4(sp);
 		sp += f.value;
 		Bprint(bioout, "%s(", s.name);

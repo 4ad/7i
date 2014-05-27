@@ -77,14 +77,6 @@ struct Registers
 	ulong	ir;
 	Inst	*ip;
 	vlong	r[32];
-	ulong	ctr;
-	ulong	cr;
-	ulong	xer;
-	ulong	lr;
-	ulong	fpscr;
-	ulong	dec;
-	ulong	tbl;
-	ulong	tbu;
 	double	fd[32];
 };
 

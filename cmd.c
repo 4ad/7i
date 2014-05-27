@@ -537,23 +537,7 @@ setreg(char *addr, char *cp)
 		return;
 	}
 	if(strcmp(cp, "lr") == 0) {
-		reg.lr = dot;
-		return;
-	}
-	if(strcmp(cp, "ctr") == 0) {
-		reg.ctr = dot;
-		return;
-	}
-	if(strcmp(cp, "fpscr") == 0) {
-		reg.fpscr = dot;
-		return;
-	}
-	if(strcmp(cp, "xer") == 0) {
-		reg.xer = dot;
-		return;
-	}
-	if(strcmp(cp, "cr") == 0) {
-		reg.cr = dot;
+		reg.r[30] = dot;
 		return;
 	}
 	if(*cp++ == 'r') {

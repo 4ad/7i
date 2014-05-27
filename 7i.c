@@ -374,8 +374,8 @@ dumpreg(void)
 {
 	int i;
 
-	Bprint(bioout, "PC  #%-8lux SP  #%-16llux CR #%-8lux LR #%-8lux CTR #%-8lux XER #%-8lux\n",
-				reg.pc, reg.r[31], reg.cr, reg.lr, reg.ctr, reg.xer);
+	Bprint(bioout, "PC  #%-8lux SP  #%-16llux LR #%-16llux\n",
+				reg.pc, reg.r[31], reg.r[30]);
 
 	for(i = 0; i < 31; i++) {
 		if((i%4) == 0 && i != 0)
