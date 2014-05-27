@@ -745,7 +745,9 @@ uncondbimm(ulong ir)
 	ulong op, imm26;
 
 	getubi(ir);
-	USED(op);
+	if(op)	/* BL */
+		reg.r[30] = reg.pc + 4;
+	reg.pc = reg.pc + sext(imm26<<2, 26);
 	if(trace)
 		itrace("%s\timm26=%d", ci->name, imm26);
 }
