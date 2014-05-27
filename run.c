@@ -5,6 +5,8 @@
 #define Extern extern
 #include "arm64.h"
 
+vlong	sext(ulong, char);
+
 vlong	doshift(ulong, vlong, ulong, ulong);
 vlong	shift64(vlong, ulong, ulong);
 long	shift32(long, ulong, ulong);
@@ -381,6 +383,15 @@ Inst itab[] =
 
 	{ 0 }
 };
+
+/* sext sign extends a bit-sized number encoded in v to a vlong. */
+vlong
+sext(ulong v, char bit)
+{
+	if((v>>(bit-1))&1)
+		return ~((1LL<<bit)-1) | v;
+	return v;
+}
 
 /* doshift, not shift, because we want to preserve names in the ARM64
 manual, and shift is used in many instruction encodings as a field
@@ -1175,17 +1186,16 @@ ldstreg(ulong ir)
 
 	getlsr(ir);
 	USED(V);
-	addr = reg.pc;
-	if(imm19 >> 16)
-		addr += ~((1<<19)-1) | imm19<<2;
-	else
-		addr += imm19<<2;
+	addr = reg.pc + sext(imm19<<2, 19);
 	switch(opc) {
 	case 0:	/* 32-bit LDR */
 		reg.r[Rt] = getmem_w(addr);
 		break;
 	case 1:	/* 64-bit LDR */
 		reg.r[Rt] = getmem_v(addr);
+		break;
+	case 2: /* LDRSW */
+		reg.r[Rt] = sext(getmem_w(addr), 32);
 		break;
 	default:
 		undef(ir);
