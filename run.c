@@ -680,6 +680,7 @@ cmpb(ulong ir)
 
 	getcmpb(ir);
 	USED(sf, op);
+	undef(ir);
 	if(trace)
 		itrace("%s\timm19=%d, Rt=%d", ci->name, imm19, Rt);
 }
@@ -696,6 +697,7 @@ condb(ulong ir)
 
 	getcb(ir);
 	USED(o0);
+	undef(ir);
 	if(trace)
 		itrace("%s\to1=%d, imm19=%d, cond=%d", ci->name, o1, imm19, cond);
 }
@@ -712,6 +714,7 @@ syscall(ulong ir)
 
 	getsys(ir);
 	USED(opc, LL);
+	undef(ir);
 	if(trace)
 		itrace("%s\timm16=%d", ci->name, imm16);
 }
@@ -729,6 +732,7 @@ tb(ulong ir)
 
 	gettb(ir);
 	USED(op);
+	undef(ir);
 	if(trace)
 		itrace("%s\tb5=%d, b40=%d, imm14=%d, Rt=%d", ci->name, b5, b40, imm14, Rt);
 }
@@ -838,6 +842,7 @@ bitfield(ulong ir)
 
 	getab(ir);
 	USED(sf, opc, N);
+	undef(ir);
 	if(trace)
 		itrace("%s\timmr=%d, imms=%d, Rn=%d, Rd=%d", ci->name, immr, imms, Rn, Rd);
 }
@@ -855,6 +860,7 @@ extract(ulong ir)
 
 	getax(ir);
 	USED(sf, op21, N, o0);
+	undef(ir);
 	if(trace)
 		itrace("%s\tRm=%d, imms=%d, Rn=%d, Rd=%d", ci->name, Rm, imms, Rn, Rd);
 }
@@ -878,6 +884,7 @@ logimm(ulong ir)
 
 	getali(ir);
 	USED(sf, opc);
+	undef(ir);
 	if(trace)
 		itrace("%s\tN=%d, immr=%d, imms=%d, Rn=%d, Rd=%d", ci->name, N, immr, imms, Rn, Rd);
 }
@@ -899,6 +906,7 @@ movwimm(ulong ir)
 
 	getamwi(ir);
 	USED(sf, opc);
+	undef(ir);
 	if(trace)
 		itrace("%s\thw=%d, imm16=%d, Rd=%d", ci->name, hw, imm16, Rd);
 }
@@ -916,6 +924,7 @@ pcrel(ulong ir)
 
 	getapcr(ir);
 	USED(op, immlo);
+	undef(ir);
 	if(trace)
 		itrace("%s\timmhi=%d, Rd=%d", ci->name, immhi, Rd);
 }
@@ -939,6 +948,7 @@ addsubreg(ulong ir)
 
 	getar(ir);
 	USED(sf, op, S, opt);
+	undef(ir);
 	if(trace)
 		itrace("%s\tRm=%d, option=%d, imm3=%d, Rn=%d, Rd=%d", ci->name, Rm, option, imm3, Rn, Rd);
 }
@@ -962,6 +972,7 @@ addsubsreg(ulong ir)
 
 	getasr(ir);
 	USED(sf, op, S, shift);
+	undef(ir);
 	if(trace)
 		itrace("%s\tRm=%d, imm6=%d, Rn=%d, Rd=%d", ci->name, Rm, imm6, Rn, Rd);
 }
@@ -985,6 +996,7 @@ addsubc(ulong ir)
 
 	getac(ir);
 	USED(sf, op, S);
+	undef(ir);
 	if(trace)
 		itrace("%s\tRm=%d, Rn=%d, Rd=%d", ci->name, Rm, Rn, Rd);
 }
@@ -1004,6 +1016,7 @@ condcmpimm(ulong ir)
 
 	getaci(ir);
 	USED(sf, op, S);
+	undef(ir);
 	if(trace)
 		itrace("%s\timm5=%d, cond=%d, Rn=%d, nzcv=%d", ci->name, imm5, cond, Rn, nzcv);
 }
@@ -1023,6 +1036,7 @@ condcmpreg(ulong ir)
 
 	getacr(ir);
 	USED(sf, op, S);
+	undef(ir);
 	if(trace)
 		itrace("%s\tRm=%d, cond=%d, Rn=%d, nzcv=%d", ci->name, Rm, cond, Rn, nzcv);
 }
@@ -1046,6 +1060,7 @@ condsel(ulong ir)
 
 	getacs(ir);
 	USED(sf, op, S, op2);
+	undef(ir);
 	if(trace)
 		itrace("%s\tRm=%d, cond=%d, Rn=%d, Rd=%d", ci->name, Rm, cond, Rn, Rd);
 }
@@ -1072,6 +1087,7 @@ dp1(ulong ir)
 
 	geta1(ir);
 	USED(sf, S, opcode);
+	undef(ir);
 	if(trace)
 		itrace("%s\tRn=%d, Rd=%d", ci->name, Rn, Rd);
 }
@@ -1099,6 +1115,7 @@ dp2(ulong ir)
 
 	geta2(ir);
 	USED(sf, opcode);
+	undef(ir);
 	if(trace)
 		itrace("%s\tRm=%d, Rn=%d, Rd=%d", ci->name, Rm, Rn, Rd);
 }
@@ -1118,6 +1135,7 @@ dp3(ulong ir)
 
 	geta3(ir);
 	USED(sf, op31, o0);
+	undef(ir);
 	if(trace)
 		itrace("%s\tRm=%d, Ra=%d, Rn=%d, Rd=%d", ci->name, Rm, Ra, Rn, Rd);
 }
@@ -1256,6 +1274,7 @@ ldstex(ulong ir)
 
 	getlsx(ir);
 	USED(size, o2, L, o1, o0);
+	undef(ir);
 	if(trace)
 		itrace("%s\tRs=%d, Rt2=%d, Rn=%d, Rt=%d", ci->name, Rs, Rt2, Rn, Rt);
 }
@@ -1275,6 +1294,7 @@ ldstnoallocp(ulong ir)
 
 	getlsnp(ir);
 	USED(opc, V, L);
+	undef(ir);
 	if(trace)
 		itrace("%s\timm7=%d, Rt2=%d, Rn=%d, Rt=%d", ci->name, imm7, Rt2, Rn, Rt);
 }
@@ -1303,6 +1323,7 @@ ldstregimmpost(ulong ir)
 
 	getlspos(ir);
 	USED(size, V, opc);
+	undef(ir);
 	if(trace)
 		itrace("%s\timm9=%d, Rn=%d, Rt=%d", ci->name, imm9, Rn, Rt);
 }
@@ -1331,6 +1352,7 @@ ldstregimmpre(ulong ir)
 
 	getlspre(ir);
 	USED(size, V, opc);
+	undef(ir);
 	if(trace)
 		itrace("%s\timm9=%d, Rn=%d, Rt=%d", ci->name, imm9, Rn, Rt);
 }
@@ -1359,6 +1381,7 @@ ldstregoff(ulong ir)
 
 	getlso(ir);
 	USED(size, V, opc);
+	undef(ir);
 	if(trace)
 		itrace("%s\tRm=%d, option=%d, S=%d, Rn=%d, Rt=%d", ci->name, Rm, option, S, Rn, Rt);
 }
@@ -1387,6 +1410,7 @@ ldstregupriv(ulong ir)
 
 	getlsu(ir);
 	USED(size, V, opc);
+	undef(ir);
 	if(trace)
 		itrace("%s\timm9=%d, Rn=%d, Rt=%d", ci->name, imm9, Rn, Rt);
 }
@@ -1416,6 +1440,7 @@ ldstreguscaleimm(ulong ir)
 
 	getlsuci(ir);
 	USED(size, V, opc);
+	undef(ir);
 	if(trace)
 		itrace("%s\timm9=%d, Rn=%d, Rt=%d", ci->name, imm9, Rn, Rt);
 }
@@ -1503,6 +1528,7 @@ ldstregpoff(ulong ir)
 
 	getlsrpo(ir);
 	USED(opc, V, L);
+	undef(ir);
 	if(trace)
 		itrace("%s\timm7=%d, Rt2=%d, Rn=%d, Rt=%d", ci->name, imm7, Rt2, Rn, Rt);
 }
@@ -1523,6 +1549,7 @@ ldstregppost(ulong ir)
 
 	getlsppo(ir);
 	USED(opc, V, L);
+	undef(ir);
 	if(trace)
 		itrace("%s\timm7=%d, Rt2=%d, Rn=%d, Rt=%d", ci->name, imm7, Rt2, Rn, Rt);
 }
@@ -1543,6 +1570,7 @@ ldstregppre(ulong ir)
 
 	getlsppr(ir);
 	USED(opc, V, L);
+	undef(ir);
 	if(trace)
 		itrace("%s\timm7=%d, Rt2=%d, Rn=%d, Rt=%d", ci->name, imm7, Rt2, Rn, Rt);
 }
