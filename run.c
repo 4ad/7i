@@ -128,13 +128,13 @@ Inst itab[] =
 
 	/* add/sub shift-reg */
 	[Casr+ 0]	{addsubsreg, "ADD",   	Iarith}, /* 832 */
-	[Casr+ 4]	{addsubsreg, "ADDS",  	Iarith}, /* 836 */
-	[Casr+ 8]	{addsubsreg, "ADD",   	Iarith}, /* 840 */
-	[Casr+12]	{addsubsreg, "ADDS",  	Iarith}, /* 844 */
-	[Casr+16]	{addsubsreg, "ADD",   	Iarith}, /* 848 */
-	[Casr+20]	{addsubsreg, "ADDS",  	Iarith}, /* 852 */
-	[Casr+24]	{addsubsreg, "ADD",   	Iarith}, /* 856 */
-	[Casr+28]	{addsubsreg, "ADDS",  	Iarith}, /* 860 */
+	[Casr+ 1]	{addsubsreg, "ADDS",  	Iarith}, /* 833 */
+	[Casr+ 2]	{addsubsreg, "SUB",   	Iarith}, /* 834 */
+	[Casr+ 3]	{addsubsreg, "SUBS",  	Iarith}, /* 835 */
+	[Casr+ 4]	{addsubsreg, "ADD",   	Iarith}, /* 836 */
+	[Casr+ 5]	{addsubsreg, "ADDS",  	Iarith}, /* 837 */
+	[Casr+ 6]	{addsubsreg, "SUB",   	Iarith}, /* 838 */
+	[Casr+ 7]	{addsubsreg, "SUBS",  	Iarith}, /* 839 */
 
 	/* add/sub carry */
 	[Cac+ 0]	{addsubc, "ADC",   	Iarith}, /* 896 */
@@ -483,7 +483,7 @@ select a particular instruction from a particular instruction class.
 •••1|0010|1...|....|....|....|....|.... amwi  move wide imm
 •••1|0000|....|....|....|....|....|.... apcr  PC-rel addr
 •••0|1011|••1.|....|....|....|....|.... ar    add/sub reg
-•••0|1011|••0.|....|....|....|....|.... asr   add/sub shift-reg
+•••0|1011|..0.|....|....|....|....|.... asr   add/sub shift-reg
 •••1|1010|000.|....|....|....|....|.... ac    add/sub carry
 •••1|1010|010.|....|....|1...|....|.... aci   cond compare imm
 •••1|1010|010.|....|....|0...|....|.... acr   cond compare reg
@@ -936,16 +936,16 @@ addsubreg(ulong ir)
 }
 
 /* add/sub shift-reg
-params: Rm<20,16> imm6<15,10> Rn<9,5> Rd<4,0> 
-ops: sf<31> op<30> S<29> shift<23,22> 
-	ADD   	sf=0	op=0	S=0	shift=0	
-	ADDS  	sf=0	op=0	S=1	shift=0	
-	ADD   	sf=0	op=1	S=0	shift=0	
-	ADDS  	sf=0	op=1	S=1	shift=0	
-	ADD   	sf=1	op=0	S=0	shift=0	
-	ADDS  	sf=1	op=0	S=1	shift=0	
-	ADD   	sf=1	op=1	S=0	shift=0	
-	ADDS  	sf=1	op=1	S=1	shift=0	
+params: shift<23,22> Rm<20,16> imm6<15,10> Rn<9,5> Rd<4,0> 
+ops: sf<31> op<30> S<29> 
+	ADD   	sf=0	op=0	S=0	
+	ADDS  	sf=0	op=0	S=1	
+	SUB   	sf=0	op=1	S=0	
+	SUBS  	sf=0	op=1	S=1	
+	ADD   	sf=1	op=0	S=0	
+	ADDS  	sf=1	op=0	S=1	
+	SUB   	sf=1	op=1	S=0	
+	SUBS  	sf=1	op=1	S=1	
 */
 void
 addsubsreg(ulong ir)
@@ -953,10 +953,18 @@ addsubsreg(ulong ir)
 	ulong sf, op, S, shift, Rm, imm6, Rn, Rd;
 
 	getasr(ir);
-	USED(sf, op, S, shift);
-	undef(ir);
+	switch(op<<1|S) {
+	case 0:	/* ADD */
+		break;
+	case 1:	/* ADDS */
+		break;
+	case 2:	/* SUB */
+		break;
+	case 3:	/* SUBS */
+		break;
+	}
 	if(trace)
-		itrace("%s\tRm=%d, imm6=%d, Rn=%d, Rd=%d", ci->name, Rm, imm6, Rn, Rd);
+		itrace("%s\tshift=%d, Rm=%d, imm6=%d, Rn=%d, Rd=%d", ci->name, shift, Rm, imm6, Rn, Rd);
 }
 
 /* add/sub carry
