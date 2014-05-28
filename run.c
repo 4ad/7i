@@ -1483,7 +1483,7 @@ ldstregimmpost(ulong ir)
 	case 0:	/* stores */
 		switch(size) {
 		case 3:	/* 64-bit STR */
-			reg.r[Rt] = getmem_v(addr);
+			putmem_v(addr, reg.r[Rt]);
 			break;
 		default:
 			undef(ir);	
@@ -1492,7 +1492,7 @@ ldstregimmpost(ulong ir)
 	case 1: /* immediate loads */
 		switch(size) {
 		case 3:	/* 64-bit LDR */
-			putmem_v(addr, reg.r[Rt]);
+			reg.r[Rt] = getmem_v(addr);
 			break;
 		default:
 			undef(ir);	
