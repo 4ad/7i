@@ -997,10 +997,28 @@ void
 movwimm(ulong ir)
 {
 	ulong sf, opc, hw, imm16, Rd;
+	uvlong r;
 
 	getamwi(ir);
-	USED(sf, opc);
-	undef(ir);
+	SET(r);	/* silence the compiler */
+	switch(opc) {
+	case 0:	/* MOVN */
+		if(sf)	/* 64-bit */
+			r = ~(imm16 << (hw<<16));
+		else
+			r = ~(ulong)(imm16 << (hw<<16));
+		break;
+	case 2:	/* MOVZ */
+		if(sf)	/* 64-bit */
+			r = imm16 << (hw<<16);
+		else
+			r = (ulong)(imm16 << (hw<<16));
+		break;
+	default:
+		undef(ir);
+	}
+	if(Rd != 31)
+		reg.r[Rd] = r;
 	if(trace)
 		itrace("%s\thw=%d, imm16=%d, Rd=%d", ci->name, hw, imm16, Rd);
 }
