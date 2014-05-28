@@ -279,7 +279,7 @@ dollar(char *cp)
 }
 
 int
-pfmt(char fmt, int mem, ulong val)
+pfmt(char fmt, vlong mem, ulong val)
 {
 	int c, i;
 	Symbol s;
