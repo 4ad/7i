@@ -73,7 +73,7 @@ void sys1(void) { Bprint(bioout, "No system call %s\n", sysctab[reg.r[REGRET]]);
 void
 sys_errstr(void)
 {
-	ulong str;
+	uvlong str;
 	char tmp[OERRLEN];
 
 	str = getmem_w(reg.r[REGSP]+4);
@@ -90,7 +90,7 @@ sys_errstr(void)
 void
 syserrstr(void)
 {
-	ulong str;
+	uvlong str;
 	uint n;
 	char tmp[ERRMAX];
 
@@ -116,7 +116,7 @@ sysfd2path(void)
 {
 	int n;
 	uint fd;
-	ulong str;
+	uvlong str;
 	char buf[1024];
 
 	fd = getmem_w(reg.r[REGSP]+4);
@@ -141,7 +141,7 @@ sysfd2path(void)
 void
 sysbind(void)
 {
-	ulong pname, pold, flags;
+	uvlong pname, pold, flags;
 	char name[1024], old[1024];
 	int n;
 
@@ -165,7 +165,7 @@ syschdir(void)
 { 
 	char file[1024];
 	int n;
-	ulong name;
+	uvlong name;
 
 	name = getmem_w(reg.r[REGSP]+4);
 	memio(file, name, sizeof(file), MemReadstring);
@@ -256,7 +256,8 @@ void
 sysread(vlong offset)
 {
 	int fd;
-	ulong size, a;
+	ulong size;
+	uvlong a;
 	char *buf, *p;
 	int n, cnt, c;
 
@@ -344,8 +345,9 @@ sysseek(void)
 void
 sysoseek(void)
 {
-	int fd, n;
-	ulong off, mode;
+	int fd;
+	vlong n, off;
+	ulong mode;
 
 	fd = getmem_w(reg.r[REGSP]+4);
 	off = getmem_w(reg.r[REGSP]+8);
@@ -421,7 +423,7 @@ sysstat(void)
 {
 	char nambuf[1024];
 	uchar buf[STATMAX];
-	ulong edir, name;
+	uvlong edir, name;
 	int n;
 
 	name = getmem_w(reg.r[REGSP]+4);
@@ -446,7 +448,7 @@ void
 sys_fstat(void)
 {
 	char buf[ODIRLEN];
-	ulong edir;
+	uvlong edir;
 	extern int _fstat(int, char*);	/* old system call */
 	int n, fd;
 
@@ -468,7 +470,7 @@ void
 sysfstat(void)
 {
 	uchar buf[STATMAX];
-	ulong edir;
+	uvlong edir;
 	int n, fd;
 
 	fd = getmem_w(reg.r[REGSP]+4);
@@ -494,7 +496,7 @@ void
 syswrite(vlong offset)
 {
 	int fd;
-	ulong size, a;
+	uvlong size, a;
 	char *buf;
 	int n;
 
@@ -558,7 +560,7 @@ syscreate(void)
 {
 	char file[1024];
 	int n;
-	ulong mode, name, perm;
+	uvlong mode, name, perm;
 
 	name = getmem_w(reg.r[REGSP]+4);
 	mode = getmem_w(reg.r[REGSP]+8);
@@ -577,7 +579,7 @@ syscreate(void)
 void
 sysbrk_(void)
 {
-	ulong addr, osize, nsize;
+	uvlong addr, osize, nsize;
 	Segment *s;
 
 	addr = getmem_w(reg.r[REGSP]+4);
@@ -609,7 +611,7 @@ void
 sysremove(void)
 {
 	char nambuf[1024];
-	ulong name;
+	uvlong name;
 	int n;
 
 	name = getmem_w(reg.r[REGSP]+4);
@@ -636,7 +638,7 @@ sysnotify(void)
 void
 syssegflush(void)
 {
-	ulong start, len;
+	uvlong start, len;
 
 	start = getmem_w(reg.r[REGSP]+4);
 	len = getmem_w(reg.r[REGSP]+8);
