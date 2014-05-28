@@ -15,31 +15,31 @@ dobplist(void)
 	for(b = bplist; b; b = b->next) {
 		switch(b->type) {
 		case Instruction:
-			Bprint(bioout, "0x%lux,%d:b %d done, at ", b->addr, b->count, b->done);
+			Bprint(bioout, "0x%llux,%d:b %d done, at ", b->addr, b->count, b->done);
 			symoff(buf, sizeof(buf), b->addr, CTEXT);
 			Bprint(bioout, "%s", buf);
 			break;
 
 		case Access:
-			Bprint(bioout, "0x%lux,%d:ba %d done, at ", b->addr, b->count, b->done);
+			Bprint(bioout, "0x%llux,%d:ba %d done, at ", b->addr, b->count, b->done);
 			symoff(buf, sizeof(buf), b->addr, CDATA);
 			Bprint(bioout, "%s", buf);
 			break;
 
 		case Read:
-			Bprint(bioout, "0x%lux,%d:br %d done, at ", b->addr, b->count, b->done);
+			Bprint(bioout, "0x%llux,%d:br %d done, at ", b->addr, b->count, b->done);
 			symoff(buf, sizeof(buf), b->addr, CDATA);
 			Bprint(bioout, "%s", buf);
 			break;
 
 		case Write:
-			Bprint(bioout, "0x%lux,%d:bw %d done, at ", b->addr, b->count, b->done);
+			Bprint(bioout, "0x%llux,%d:bw %d done, at ", b->addr, b->count, b->done);
 			symoff(buf, sizeof(buf), b->addr, CDATA);
 			Bprint(bioout, "%s", buf);
 			break;
 
 		case Equal:
-			Bprint(bioout, "0x%lux,%d:be at ", b->addr, b->count);
+			Bprint(bioout, "0x%llux,%d:be at ", b->addr, b->count);
 			symoff(buf, sizeof(buf), b->addr, CDATA);
 			Bprint(bioout, "%s", buf);
 			break;

@@ -26,7 +26,7 @@ enum
 struct Breakpoint
 {
 	int		type;		/* Instruction/Read/Access/Write/Equal */
-	ulong		addr;		/* Place at address */
+	uvlong		addr;		/* Place at address */
 	int		count;		/* To execute count times or value */
 	int		done;		/* How many times passed through */
 	Breakpoint	*next;		/* Link to next one */
