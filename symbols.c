@@ -20,7 +20,7 @@ printsource(long dot)
 }
 
 void
-printlocals(Symbol *fn, ulong fp)
+printlocals(Symbol *fn, uvlong fp)
 {
 	int i;
 	Symbol s;
@@ -29,12 +29,12 @@ printlocals(Symbol *fn, ulong fp)
 	for (i = 0; localsym(&s, i); i++) {
 		if (s.class != CAUTO)
 			continue;
-		Bprint(bioout, "\t%s=#%lux\n", s.name, getmem_4(fp-s.value));
+		Bprint(bioout, "\t%s=#%llux\n", s.name, getmem_v(fp-s.value));
 	}
 }
 
 void
-printparams(Symbol *fn, ulong fp)
+printparams(Symbol *fn, uvlong fp)
 {
 	int i;
 	Symbol s;
@@ -47,7 +47,7 @@ printparams(Symbol *fn, ulong fp)
 			continue;
 		if (first++)
 			Bprint(bioout, ", ");
-		Bprint(bioout, "%s=#%lux", s.name, getmem_4(fp+s.value));
+		Bprint(bioout, "%s=#%llux", s.name, getmem_v(fp+s.value));
 	}
 	Bprint(bioout, ") ");
 }
@@ -58,7 +58,7 @@ printparams(Symbol *fn, ulong fp)
 void
 stktrace(int modif)
 {
-	ulong pc, sp;
+	uvlong pc, sp;
 	Symbol s, f;
 	int i;
 	char buf[512];
@@ -77,7 +77,7 @@ stktrace(int modif)
 			break;
 		if (s.type == 'L' || s.type == 'l' || pc <= s.value+4)
 			pc = reg.r[30];
-		else pc = getmem_4(sp);
+		else pc = getmem_v(sp);
 		sp += f.value;
 		Bprint(bioout, "%s(", s.name);
 		printparams(&s, sp);
@@ -85,6 +85,7 @@ stktrace(int modif)
 		Bprint(bioout, " called from ");
 		symoff(buf, sizeof(buf), pc-4, CTEXT);
 		Bprint(bioout, buf);
+		Bprint(bioout, " ");
 		printsource(pc-8);
 		Bprint(bioout, "\n");
 		if(modif == 'C')

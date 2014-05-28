@@ -160,8 +160,8 @@ void		reset(void);
 void		dobplist(void);
 void		procinit(int);
 void		printsource(long);
-void		printparams(Symbol *, ulong);
-void		printlocals(Symbol *, ulong);
+void		printparams(Symbol *, uvlong);
+void		printlocals(Symbol *, uvlong);
 void		stktrace(int);
 void		iprofile(void);
 
