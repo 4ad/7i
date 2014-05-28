@@ -179,7 +179,7 @@ putmem_h(uvlong addr, short data)
 }
 
 char *
-memio(char *mb, ulong mem, int size, int dir)
+memio(char *mb, uvlong mem, int size, int dir)
 {
 	int i;
 	char *buf, c;

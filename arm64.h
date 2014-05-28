@@ -129,7 +129,7 @@ void*		vaddr(uvlong);
 void		itrace(char *, ...);
 void		segsum(void);
 void	syscall(ulong);
-char*		memio(char*, ulong, int, int);
+char*		memio(char*, uvlong, int, int);
 ulong		getmem_w(uvlong);
 ulong		ifetch(uvlong);
 ushort		getmem_h(uvlong);
