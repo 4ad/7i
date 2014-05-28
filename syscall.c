@@ -216,11 +216,11 @@ void
 sysexits(void)
 {
 	char buf[ERRMAX];
-	ulong str;
+	uvlong str;
 
-	str = getmem_w(reg.r[REGSP]+4);
+	str = getmem_v(reg.r[REGSP]+8);
 	if(sysdbg)
-		itrace("exits(0x%lux)", str);
+		itrace("exits(0x%llux)", str);
 
 	count = 1;
 	if(str != 0) {
