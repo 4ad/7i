@@ -180,7 +180,7 @@ Extern		int atbpt;
 Extern		int membpt;
 Extern		int cmdcount;
 Extern		int nopcount;
-Extern		ulong dot;
+Extern		uvlong dot;
 extern		char *file;
 Extern		Biobuf *bioout;
 Extern		Biobuf *bin;

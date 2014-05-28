@@ -175,7 +175,7 @@ colon(char *addr, char *cp)
 	}
 
 	dot = reg.pc;
-	Bprint(bioout, "%s at #%lux ", atbpt ? "breakpoint" : "stopped", dot);
+	Bprint(bioout, "%s at #%llux ", atbpt ? "breakpoint" : "stopped", dot);
 	symoff(tbuf, sizeof(tbuf), dot, CTEXT);
 	Bprint(bioout, tbuf);
 	if(fmt == 'z')
