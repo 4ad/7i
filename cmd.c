@@ -28,7 +28,7 @@ nextc(char *p)
 }
 
 char *
-numsym(char *addr, ulong *val)
+numsym(char *addr, uvlong *val)
 {
 	char tsym[128], *t;
 	static char *delim = "`'<>/\\@*|-~+-/=?\n";
@@ -53,9 +53,9 @@ numsym(char *addr, ulong *val)
 		*val = s.value;
 	else {
 		if(tsym[0] == '#')
-			*val = strtoul(tsym+1, 0, 16);
+			*val = strtoull(tsym+1, 0, 16);
 		else
-			*val = strtoul(tsym, 0, 0);
+			*val = strtoull(tsym, 0, 0);
 	}
 	return addr;
 }
@@ -63,7 +63,7 @@ numsym(char *addr, ulong *val)
 ulong
 expr(char *addr)
 {
-	ulong t, t2;
+	uvlong t, t2;
 	char op;
 
 	if(*addr == '\0')
