@@ -321,6 +321,16 @@ pfmt(char fmt, vlong mem, ulong val)
 		inc = 4;
 		break;
 
+	case 'V':
+		c = Bprint(bioout, "#%-16lld ", mem ? (vlong)getmem_v(dot) : val);
+		inc = 8;
+		break;
+
+	case 'Z':
+		c = Bprint(bioout, "#%-16llud ", mem ? (uvlong)getmem_v(dot) : val);
+		inc = 8;
+		break;
+
 	case 'x':
 		c = Bprint(bioout, "#%-4lux ", mem ? (long)getmem_2(dot) : val);
 		inc = 2;
@@ -329,6 +339,11 @@ pfmt(char fmt, vlong mem, ulong val)
 	case 'X':
 		c = Bprint(bioout, "#%-8lux ", mem ? (long)getmem_4(dot) : val);
 		inc = 4;
+		break;
+
+	case 'y':
+		c = Bprint(bioout, "#%-16llux ", mem ? (uvlong)getmem_v(dot) : val);
+		inc = 8;
 		break;
 
 	case 'u':
