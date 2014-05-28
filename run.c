@@ -1474,10 +1474,37 @@ void
 ldstregimmpost(ulong ir)
 {
 	ulong size, V, opc, imm9, Rn, Rt;
+	uvlong addr;
 
 	getlspos(ir);
-	USED(size, V, opc);
-	undef(ir);
+	USED(V);
+	addr = reg.r[Rn];
+	switch(opc) {
+	case 0:	/* stores */
+		switch(size) {
+		case 3:	/* 64-bit STR */
+			reg.r[Rt] = getmem_v(addr);
+			break;
+		default:
+			undef(ir);	
+		}
+		break;
+	case 1: /* immediate loads */
+		switch(size) {
+		case 3:	/* 64-bit LDR */
+			putmem_v(addr, reg.r[Rt]);
+			break;
+		default:
+			undef(ir);	
+		}
+		break;
+	default:
+		undef(ir);
+	}
+	/* post-index calculation */
+	addr = reg.r[Rn] + sext(imm9, 9);
+	/* write-back */
+	reg.r[Rn] = addr;
 	if(trace)
 		itrace("%s\timm9=%d, Rn=%d, Rt=%d", ci->name, imm9, Rn, Rt);
 }
