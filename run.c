@@ -908,35 +908,41 @@ void
 bitfield(ulong ir)
 {
 	ulong sf, opc, N, immr, imms, Rn, Rd;
+	uvlong src;
+	ulong bits;
 
 	getab(ir);
 	USED(N);
-	switch(sf) {
-	case 0: /* 32-bit */
+	if(imms >= immr) {	/* shift right */
+		src = ((uvlong)reg.r[Rn]>>immr)&((1<<(imms-immr+1))-1);
 		switch(opc) {
-		case 2:	/* UBFM */
-			if(imms >= immr)
-				reg.r[Rd] = ((ulong)reg.r[Rn]>>immr)&((1<<(imms-immr+1))-1);
-			else
-				reg.r[Rd] = (reg.r[Rn]&((1<<(imms+1))-1))<<immr;
+		case 0: /* SBFM */
+			reg.r[Rd] = sext(src, imms - immr) >> immr;
 			break;
-		default:
-			undef(ir);
+		case 1:	/* BFM */
+			reg.r[Rd] = (reg.r[Rd]&~((1<<(imms-immr+1))-1)) | src;
+			break;
+		case 2:	/* UBFM */
+			reg.r[Rd] = src;
+			break;
 		}
-		break;
-	case 1:	/* 64-bit*/
+	} else {	/* shift left */
+		src = reg.r[Rn]&((1<<(imms+1))-1);
+		bits = sf ? 64 : 32;
 		switch(opc) {
-		case 2:	/* UBFM */
-			if(imms >= immr)
-				reg.r[Rd] = ((uvlong)reg.r[Rn]>>immr)&((1<<(imms-immr+1))-1);
-			else
-				reg.r[Rd] = (reg.r[Rn]&((1<<(imms+1))-1))<<(64-immr);
+		case 0: /* SBFM */
+			reg.r[Rd] = sext(src, imms) << (bits-immr);
 			break;
-		default:
-			undef(ir);
+		case 1:	/* BFM */
+			reg.r[Rd] = (reg.r[Rd]&~((1<<(bits-immr+imms+1))-1)) | (src << (bits-immr));
+			break;
+		case 2:	/* UBFM */
+			reg.r[Rd] = src << (bits-immr);
+			break;
 		}
-		break;
 	}
+	if(sf == 0)	/* 32-bit */
+		reg.r[Rn] = (ulong)reg.r[Rn];
 	if(trace)
 		itrace("%s\timmr=%d, imms=%d, Rn=%d, Rd=%d", ci->name, immr, imms, Rn, Rd);
 }
