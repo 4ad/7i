@@ -1484,6 +1484,7 @@ ldstregimmpost(ulong ir)
 
 	getlspos(ir);
 	USED(V);
+	/* post-index calculation */
 	addr = reg.r[Rn];
 	Xt = (Rt == 31)? 0 : reg.r[Rt];
 	switch(opc) {
@@ -1508,10 +1509,8 @@ ldstregimmpost(ulong ir)
 	default:
 		undef(ir);
 	}
-	/* post-index calculation */
-	addr = reg.r[Rn] + sext(imm9, 9);
 	/* write-back */
-	reg.r[Rn] = addr;
+	reg.r[Rn] += sext(imm9, 9);
 	if(trace)
 		itrace("%s\timm9=%d, Rn=%d, Rt=%d", ci->name, imm9, Rn, Rt);
 }
