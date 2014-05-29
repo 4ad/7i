@@ -1480,16 +1480,17 @@ void
 ldstregimmpost(ulong ir)
 {
 	ulong size, V, opc, imm9, Rn, Rt;
-	uvlong addr;
+	uvlong addr, Xt;
 
 	getlspos(ir);
 	USED(V);
 	addr = reg.r[Rn];
+	Xt = (Rt == 31)? 0 : reg.r[Rt];
 	switch(opc) {
 	case 0:	/* stores */
 		switch(size) {
 		case 3:	/* 64-bit STR */
-			putmem_v(addr, reg.r[Rt]);
+			putmem_v(addr, Xt);
 			break;
 		default:
 			undef(ir);	
@@ -1536,17 +1537,18 @@ void
 ldstregimmpre(ulong ir)
 {
 	ulong size, V, opc, imm9, Rn, Rt;
-	uvlong addr;
+	uvlong addr, Xt;
 
 	getlspre(ir);
 	USED(V);
 	/* pre-index calculation */
 	addr = reg.r[Rn] + sext(imm9, 9);
+	Xt = (Rt == 31)? 0 : reg.r[Rt];
 	switch(opc) {
 	case 0:	/* stores */
 		switch(size) {
 		case 3:	/* 64-bit STR */
-			putmem_v(addr, reg.r[Rt]);
+			putmem_v(addr, Xt);
 			break;
 		default:
 			undef(ir);	
@@ -1671,25 +1673,26 @@ void
 ldstregusignimm(ulong ir)
 {
 	ulong size, V, opc, imm12, Rn, Rt;
-	uvlong addr;
+	uvlong addr, Xt;
 
 	getlsusi(ir);
 	USED(V);
+	Xt = (Rt == 31)? 0 : reg.r[Rt];
 	addr = reg.r[Rn] + (imm12 << size);
 	switch(opc) {
 	case 0:	/* stores */
 		switch(size) {
 		case 0:	/* STRB */
-			putmem_b(addr, reg.r[Rt]);
+			putmem_b(addr, Xt);
 			break;
 		case 1:	/* STRH */
-			putmem_h(addr, reg.r[Rt]);
+			putmem_h(addr, Xt);
 			break;
 		case 2:	/* 32-bit STR */
-			putmem_w(addr, reg.r[Rt]);
+			putmem_w(addr, Xt);
 			break;
 		case 3:	/* 64-bit STR */
-			putmem_v(addr, reg.r[Rt]);
+			putmem_v(addr, Xt);
 			break;
 		}
 		break;
