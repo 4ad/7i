@@ -500,7 +500,7 @@ syswrite(vlong offset)
 	if(n < 0)
 		errstr(errbuf, sizeof errbuf);	
 	if(sysdbg)
-		itrace("write(%d, %lux, %d, 0xllx) = %d", fd, a, size, offset, n);
+		itrace("pwrite(%d, %lux, %d, 0x%llx) = %d", fd, a, size, offset, n);
 	free(buf);
 
 	reg.r[REGRET] = n;
