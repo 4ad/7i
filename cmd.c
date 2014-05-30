@@ -11,8 +11,8 @@ char	fmt = 'X';
 int	width = 60;
 int	inc;
 
-ulong	expr(char*);
-ulong	expr1(char*);
+uvlong	expr(char*);
+uvlong	expr1(char*);
 char*	term(char*, ulong*);
 
 char *
@@ -60,7 +60,7 @@ numsym(char *addr, uvlong *val)
 	return addr;
 }
 
-ulong
+uvlong
 expr(char *addr)
 {
 	uvlong t, t2;

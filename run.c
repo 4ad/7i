@@ -928,11 +928,13 @@ addsubimm(ulong ir)
 		}
 		break;
 	}
-	if(Rd != 31)
-		reg.r[Rd] = r;
 	if(S) {	/* flags */
+		if(Rd != 31)
+			reg.r[Rd] = r;
 		nz(r);
 		reg.pstate.V = ov;
+	} else {
+		reg.r[Rd] = r;
 	}
 
 	if(trace)

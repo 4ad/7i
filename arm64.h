@@ -152,7 +152,7 @@ void		brkchk(ulong, int);
 void		delbpt(char*);
 void		breakpoint(char*, char*);
 char*		nextc(char*);
-ulong		expr(char*);
+uvlong		expr(char*);
 void		initstk(int, char**);
 void		initmap(void);
 void		inithdr(int);
