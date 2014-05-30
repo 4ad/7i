@@ -878,7 +878,6 @@ addsubimm(ulong ir)
 	m32 = (ulong)m;
 	Xn = reg.r[Rn];
 	Wn = (ulong)Xn;
-//	print("Xn: %llux\n", Xn);
 	SET(r, ov);	/* silence the compiler */
 	switch(sf) {
 	case 0:	/* 32-bit */
@@ -899,14 +898,12 @@ addsubimm(ulong ir)
 			/* fallthrough */
 		case 0:	/* ADD, ADDS */
 			r = Xn + m;
-			ov = ov64(Xn, m, r);
-			print("add r: %llux, m: %llux\n", r, m);
+			ov = ov64(Xn, m, r);;
 			break;
 		}
 		break;
 	}
 	reg.r[Rd] = r;
-	print("Rd: %llx, r: %llx\n", reg.r[Rd], r);
 	if(S) {	/* flags */
 		nz(r);
 		reg.pstate.V = ov;
