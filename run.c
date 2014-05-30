@@ -388,6 +388,33 @@ Inst itab[] =
 	{ 0 }
 };
 
+void
+call(uvlong npc)
+{
+	Symbol s;
+
+	if(calltree) {
+		findsym(npc, CTEXT, &s);
+		Bprint(bioout, "%8lux %s(", reg.pc, s.name);
+		printparams(&s, reg.r[31]);
+		Bprint(bioout, "from ");
+		printsource(reg.pc);
+		Bputc(bioout, '\n');
+	}
+}
+
+void
+ret(uvlong npc)
+{
+	Symbol s;
+
+	if(calltree) {
+		findsym(npc, CTEXT, &s);
+		Bprint(bioout, "%8lux return to #%llux %s r30=#%llux (%lld)\n",
+					reg.pc, npc, s.name, reg.r[30], reg.r[30]);
+	}
+}
+
 char
 runcond(ulong cond)
 {
@@ -841,13 +868,17 @@ void
 uncondbimm(ulong ir)
 {
 	ulong op, imm26;
+	uvlong npc;
 
 	getubi(ir);
-	if(op)	/* BL */
+	npc = reg.pc + (sext(imm26, 26) << 2);
+	if(op) {	/* BL */
+		call(npc);
 		reg.r[30] = reg.pc + 4;
+	}
 	if(trace)
 		itrace("%s\timm26=%d", ci->name, imm26);
-	reg.pc += (sext(imm26, 26) << 2) - 4;
+	reg.pc = npc - 4;
 }
 
 /* unconditional branch reg
@@ -868,6 +899,7 @@ uncondbreg(ulong ir)
 		itrace("%s\tRn=%d", ci->name, Rn);
 	switch(opc) {
 	case 2:	/* RET */
+		ret(reg.r[30]);
 		reg.pc = reg.r[30] - 4;
 		break;
 	default:
