@@ -5,6 +5,8 @@
 #define Extern extern
 #include "arm64.h"
 
+void	call(uvlong);
+void	ret(uvlong);
 char	runcond(ulong);
 ulong	s32(ulong);
 ulong	s64(uvlong);
@@ -15,6 +17,7 @@ vlong	sext(ulong, char);
 vlong	doshift(ulong, vlong, ulong, ulong);
 vlong	shift64(vlong, ulong, ulong);
 long	shift32(long, ulong, ulong);
+char	pstatecmp(Registers *, Registers *);
 
 void	cmpb(ulong);
 void	condb(ulong);
@@ -551,7 +554,8 @@ shift32(long v, ulong typ, ulong bits)
 }
 
 char
-pstatecmp(Registers *a, Registers *b) {
+pstatecmp(Registers *a, Registers *b)
+{
 	if(a->pstate.N != b->pstate.N)
 		return 1;
 	if(a->pstate.Z != b->pstate.Z)
