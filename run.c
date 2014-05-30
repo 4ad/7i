@@ -928,7 +928,8 @@ addsubimm(ulong ir)
 		}
 		break;
 	}
-	reg.r[Rd] = r;
+	if(Rd != 31)
+		reg.r[Rd] = r;
 	if(S) {	/* flags */
 		nz(r);
 		reg.pstate.V = ov;
