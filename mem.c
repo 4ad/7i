@@ -266,7 +266,7 @@ vaddr(uvlong addr)
 			}
 		}
 	}
-	Bprint(bioout, "data_access_MMU_miss [addr 0x%.16llux]\n", addr);
+	Bprint(bioout, "data_access_MMU_miss [addr 0x%.16llux pc 0x%lux]\n", addr, reg.pc);
 	longjmp(errjmp, 0);
 	return 0;		/*to stop compiler whining*/
 }

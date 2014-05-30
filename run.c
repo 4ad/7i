@@ -866,29 +866,51 @@ void
 addsubimm(ulong ir)
 {
 	ulong sf, op, S, shift, imm12, Rn, Rd;
-	ulong imm;
-	uvlong r;
+	uvlong Xn, m, r;
+	ulong Wn, m32;
+	char ov;
 
 	getai(ir);
 	if(shift)
-		imm = imm12<<12;
+		m = imm12<<12;
 	else
-		imm = imm12;
-	if(sf)
-		r = reg.r[Rn];
-	else
-		r = (ulong)reg.r[Rn];
-	switch(op) {
-	case 0:	/* add */
-		r += imm;
+		m = imm12;
+	m32 = (ulong)m;
+	Xn = reg.r[Rn];
+	Wn = (ulong)Xn;
+//	print("Xn: %llux\n", Xn);
+	SET(r, ov);	/* silence the compiler */
+	switch(sf) {
+	case 0:	/* 32-bit */
+		switch(op) {
+		case 1: /* SUB, SUBS */
+			m32 = ~m32 + 1;
+			/* fallthrough */
+		case 0:	/* ADD, ADDS */
+			r = Wn + m32;
+			ov = ov32(Wn, m32, r);
+			break;
+		}
 		break;
-	case 1: /* sub */
-		r -= imm;
+	case 1:	/* 64-bit */
+		switch(op) {
+		case 1: /* SUB, SUBS */
+			m = ~m + 1;
+			/* fallthrough */
+		case 0:	/* ADD, ADDS */
+			r = Xn + m;
+			ov = ov64(Xn, m, r);
+			print("add r: %llux, m: %llux\n", r, m);
+			break;
+		}
 		break;
 	}
 	reg.r[Rd] = r;
-	if(S)
-		undef(ir);
+	print("Rd: %llx, r: %llx\n", reg.r[Rd], r);
+	if(S) {	/* flags */
+		nz(r);
+		reg.pstate.V = ov;
+	}
 
 	if(trace)
 		itrace("%s\tshift=%d, imm12=%d, Rn=%d, Rd=%d", ci->name, shift, imm12, Rn, Rd);
@@ -1112,9 +1134,10 @@ addsubsreg(ulong ir)
 			/* fallthrough */
 		case 0:	/* ADD, ADDS */
 			r = Wn + m32;
-			ov = ov32(Xn, m32, r);
+			ov = ov32(Wn, m32, r);
 			break;
 		}
+		break;
 	case 1:	/* 64-bit */
 		switch(op) {
 		case 1: /* SUB, SUBS */
