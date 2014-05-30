@@ -1028,10 +1028,58 @@ void
 logimm(ulong ir)
 {
 	ulong sf, opc, N, immr, imms, Rn, Rd;
+	uvlong Xn, r, imm;
+	ulong Wn;
 
 	getali(ir);
-	USED(sf, opc);
-	undef(ir);
+	if(Rn == 31)
+		Xn = 0;
+	else
+		Xn = reg.r[Rn];
+	Wn = (ulong)Xn;
+	imm = N<<12 | imms<<5 | immr;
+	SET(r);
+	switch(sf) {
+	case 0:	/* 32-bit */
+		switch(opc) {
+		case 0:	/* AND */
+			r = Wn & imm;
+			break;
+		case 1:	/* ORR */
+			r = Wn | imm;
+			break;
+		case 2:	/* EOR */
+			r = Wn ^ imm;
+			break;
+		case 3:	/* ANDS */
+			r = Wn & imm;
+			break;
+		}
+		break;
+	case 1:	/* 64-bit */
+		switch(opc) {
+		case 0:	/* AND */
+			r = Xn & imm;
+			break;
+		case 1:	/* ORR */
+			r = Xn | imm;
+			break;
+		case 2:	/* EOR */
+			r = Xn ^ imm;
+			break;
+		case 3:	/* ANDS */
+			r = Xn & imm;
+			break;
+		}
+		break;
+	}
+	if(opc == 3) {	/* flags */
+		nz(r);
+		if(Rd != 31)
+			reg.r[Rd] = r;
+	} else {
+		reg.r[Rd] = r;
+	}
 	if(trace)
 		itrace("%s\tN=%d, immr=%d, imms=%d, Rn=%d, Rd=%d", ci->name, N, immr, imms, Rn, Rd);
 }
@@ -1761,6 +1809,9 @@ ldstregusignimm(ulong ir)
 		break;
 	case 2:	/* signed loads */
 		switch(size) {
+		case 0:	/* LDRSB */
+			reg.r[Rt] = sext(getmem_b(addr), 8);
+			break;
 		case 2:	/* LDRSW */
 			reg.r[Rt] = sext(getmem_w(addr), 32);
 			break;
