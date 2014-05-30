@@ -241,6 +241,7 @@ dollar(char *cp)
 			trace = 0;
 			sysdbg = 0;
 			calltree = 0;
+			regdb = 0;
 			break;
 		case 's':
 			sysdbg = 1;
@@ -250,6 +251,10 @@ dollar(char *cp)
 			break;
 		case 'c':
 			calltree = 1;
+			break;
+		case 'r':
+			trace = 1;
+			regdb = 1;
 			break;
 		}
 		break;

@@ -172,6 +172,7 @@ Extern		int text;
 Extern		int trace;
 Extern 		int sysdbg;
 Extern 		int calltree;
+Extern 		int regdb;
 Extern		Icache icache;
 Extern		int count;
 Extern		jmp_buf errjmp;

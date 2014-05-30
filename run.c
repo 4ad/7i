@@ -523,15 +523,40 @@ shift32(long v, ulong typ, ulong bits)
 	return 0xbad1U << 28;
 }
 
+char
+pstatecmp(Registers *a, Registers *b) {
+	if(a->pstate.N != b->pstate.N)
+		return 1;
+	if(a->pstate.Z != b->pstate.Z)
+		return 1;
+	if(a->pstate.C != b->pstate.C)
+		return 1;
+	if(a->pstate.V != b->pstate.V)
+		return 1;
+	return 0;
+}
+
 void
 run(void)
 {
+	Registers saved;
+	int i;
+
 	do {
 		reg.ir = ifetch(reg.pc);
 		ci = &itab[getxo(reg.ir)];
 		if(ci && ci->func){
+			saved = reg;
 			ci->count++;
 			(*ci->func)(reg.ir);
+			if(regdb) {
+				for(i = 0; i <= 31; i++) {
+					if(reg.r[i] != saved.r[i])
+						print("R%d	0x%llux -> 0x%llux	(%+lld 0x%llux)\n", i, saved.r[i], reg.r[i], reg.r[i] - saved.r[i], reg.r[i] - saved.r[i]);
+				}
+				if(pstatecmp(&saved, &reg))
+					print("NZCV	%d%d%d%d -> %d%d%d%d\n", saved.pstate.N, saved.pstate.Z, saved.pstate.C, saved.pstate.V, reg.pstate.N, reg.pstate.Z, reg.pstate.C, reg.pstate.V);
+			}
 		} else {
 			if(ci && ci->name && trace)
 				itrace("%s\t[not yet done]", ci->name);
