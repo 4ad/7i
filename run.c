@@ -1460,7 +1460,10 @@ logsreg(ulong ir)
 	ulong Wn, m32;
 
 	getalsr(ir);
-	m = doshift(sf, reg.r[Rm], shift, imm6);
+	if(Rm == 31)
+		m = 0;
+	else
+		m = doshift(sf, reg.r[Rm], shift, imm6);
 	m32 = (ulong)m;
 	if(Rn == 31)
 		Xn = 0;
@@ -1484,7 +1487,8 @@ logsreg(ulong ir)
 	default:
 		undef(ir);
 	}
-	reg.r[Rd] = r;
+	if(Rd != 31)
+		reg.r[Rd] = r;
 	if(trace)
 		itrace("%s\tshift=%d, Rm=%d, imm6=%d, Rn=%d, Rd=%d", ci->name, shift, Rm, imm6, Rn, Rd);
 }
