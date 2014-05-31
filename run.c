@@ -315,6 +315,7 @@ Inst itab[] =
 	[Clso+11]	{ldstregoff, "LDRSH", 	 Iload}, /* 1739 */
 	[Clso+16]	{ldstregoff, "STR",   	Istore}, /* 1744 */
 	[Clso+17]	{ldstregoff, "LDR",   	 Iload}, /* 1745 */
+	[Clso+18]	{ldstregoff, "LDRSW", 	 Iload}, /* 1746 */
 	[Clso+24]	{ldstregoff, "STR",   	Istore}, /* 1752 */
 	[Clso+25]	{ldstregoff, "LDR",   	 Iload}, /* 1753 */
 	[Clso+26]	{ldstregoff, "PRFM",  	 Iload}, /* 1754 */
@@ -1742,6 +1743,7 @@ ops: size<31,30> V<26> opc<23,22>
 	LDRSH 	size=1	V=0	opc=3	
 	STR   	size=2	V=0	opc=0	
 	LDR   	size=2	V=0	opc=1	
+	LDRSW 	size=2	V=0	opc=2	
 	STR   	size=3	V=0	opc=0	
 	LDR   	size=3	V=0	opc=1	
 	PRFM  	size=3	V=0	opc=2	
@@ -1750,10 +1752,40 @@ void
 ldstregoff(ulong ir)
 {
 	ulong size, V, opc, Rm, option, S, Rn, Rt;
+	ulong m;
+	uvlong addr;
 
 	getlso(ir);
-	USED(size, V, opc);
-	undef(ir);
+	USED(V);
+	switch(option) {
+	default:
+		undef(ir);
+	case 3:	/* LSL */
+		m = (Rm == 31)? 0 : reg.r[Rm];
+		addr = reg.r[Rn];
+		if(S)
+			addr += reg.r[m] << 2;
+		else
+			addr += reg.r[m];
+		break;
+	}
+	switch(opc) {
+	case 0:	/* stores */
+		undef(ir);
+		break;
+	case 1: /* immediate loads */
+		undef(ir);
+		break;
+	case 2:	/* signed loads */
+		switch(size) {
+		default:
+			undef(ir);
+		case 2:	/* LDRSW */
+			reg.r[Rt] = sext(getmem_w(addr), 32);
+			break;
+		}
+		break;
+	}
 	if(trace)
 		itrace("%s\tRm=%d, option=%d, S=%d, Rn=%d, Rt=%d", ci->name, Rm, option, S, Rn, Rt);
 }
