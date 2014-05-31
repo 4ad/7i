@@ -291,7 +291,7 @@ class to get the super-opcode (xo) */
 #define opax(i)   	((i>>21)&0x1|(((i>>22)&0x1)<<1)|(((i>>29)&0x3)<<2)|(((i>>31)&0x1)<<4))
 #define opali(i)  	((i>>29)&0x3|(((i>>31)&0x1)<<2))
 #define opamwi(i) 	((i>>29)&0x3|(((i>>31)&0x1)<<2))
-#define opapcr(i) 	((i>>29)&0x3|(((i>>31)&0x1)<<2))
+#define opapcr(i) 	((i>>31)&0x1)
 #define opar(i)   	((i>>22)&0x3|(((i>>29)&0x1)<<2)|(((i>>30)&0x1)<<3)|(((i>>31)&0x1)<<4))
 #define opasr(i)  	((i>>29)&0x1|(((i>>30)&0x1)<<1)|(((i>>31)&0x1)<<2))
 #define opac(i)   	((i>>29)&0x1|(((i>>30)&0x1)<<1)|(((i>>31)&0x1)<<2))

@@ -123,7 +123,7 @@ Inst itab[] =
 
 	/* PC-rel addr */
 	[Capcr+ 0]	{pcrel, "ADR",   	Iarith}, /* 704 */
-	[Capcr+ 4]	{pcrel, "ADRP",  	Iarith}, /* 708 */
+	[Capcr+ 1]	{pcrel, "ADRP",  	Iarith}, /* 705 */
 
 	/* add/sub extended reg */
 	[Car+ 0]	{addsubreg, "ADD",   	Iarith}, /* 768 */
@@ -646,7 +646,7 @@ select a particular instruction from a particular instruction class.
 •••1|0011|1••.|....|....|....|....|.... ax    extract
 •••1|0010|0...|....|....|....|....|.... ali   logic imm
 •••1|0010|1...|....|....|....|....|.... amwi  move wide imm
-•••1|0000|....|....|....|....|....|.... apcr  PC-rel addr
+•..1|0000|....|....|....|....|....|.... apcr  PC-rel addr
 •••0|1011|••1.|....|....|....|....|.... ar    add/sub reg
 •••0|1011|..0.|....|....|....|....|.... asr   add/sub shift-reg
 •••1|1010|000.|....|....|....|....|.... ac    add/sub carry
@@ -1187,10 +1187,10 @@ movwimm(ulong ir)
 }
 
 /* PC-rel addr
-params: immhi<23,5> Rd<4,0> 
-ops: op<31> immlo<30,29> 
-	ADR   	op=0	immlo=0	
-	ADRP  	op=1	immlo=0	
+params: immlo<30,29> immhi<23,5> Rd<4,0> 
+ops: op<31> 
+	ADR   	op=0	
+	ADRP  	op=1	
 */
 void
 pcrel(ulong ir)
@@ -1198,10 +1198,10 @@ pcrel(ulong ir)
 	ulong op, immlo, immhi, Rd;
 
 	getapcr(ir);
-	USED(op, immlo);
+	USED(op);
 	undef(ir);
 	if(trace)
-		itrace("%s\timmhi=%d, Rd=%d", ci->name, immhi, Rd);
+		itrace("%s\timmlo=%d, immhi=%d, Rd=%d", ci->name, immlo, immhi, Rd);
 }
 
 /* add/sub extended reg
