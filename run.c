@@ -1196,10 +1196,15 @@ void
 pcrel(ulong ir)
 {
 	ulong op, immlo, immhi, Rd;
+	vlong imm;
 
 	getapcr(ir);
-	USED(op);
-	undef(ir);
+	if(op)
+		imm = sext(immhi<<14 | immlo<<12, 33);
+	else
+		imm = sext(immhi<<2 | immlo, 21);
+	if(Rd != 31)
+		reg.r[Rd] = reg.pc + imm;
 	if(trace)
 		itrace("%s\timmlo=%d, immhi=%d, Rd=%d", ci->name, immlo, immhi, Rd);
 }
