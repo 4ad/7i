@@ -138,7 +138,7 @@ segsum(void)
 	int i;
 
 	Bprint(bioout, "\n\nMemory Summary\n\n");
-	Bprint(bioout, "      Base     End      Resident References\n");
+	Bprint(bioout, "      Base             End              Resident References\n");
 	for(i = 0; i < Nseg; i++) {
 		s = &memory.seg[i];
 		Bprint(bioout, "%-5s %.16llux %.16llux %-8d %-8d\n",
