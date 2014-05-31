@@ -5,6 +5,7 @@
 #define Extern extern
 #include "arm64.h"
 
+uvlong	decodebitmask(ulong, ulong, ulong);
 void	call(uvlong);
 void	ret(uvlong);
 char	runcond(ulong);
@@ -390,6 +391,31 @@ Inst itab[] =
 
 	{ 0 }
 };
+
+uvlong
+decodebitmask(ulong N, ulong imms, ulong immr)
+{
+	uvlong S, R, levels, welem, rwelem, wmask;
+	ulong nimms, len, size;
+	int i;
+	
+	nimms = N<<6 | (~imms)&0x3F;
+	len = 0;
+	while(nimms >>= 1)
+		len++;
+	size = 1<<(len+1);
+
+	levels = ((1<<len)-1)&0x3F;
+	S = imms & levels;
+	R = immr & levels;
+	welem = (1<<(S+1))-1;
+	rwelem = (welem >> R) | ((welem&((1<<(R+1))-1)) << (size-R));
+	wmask = 0LL;
+	for(i = 0; i+size <= 64; i += size)
+		wmask |= rwelem << size;
+
+	return wmask;
+}
 
 void
 call(uvlong npc)
