@@ -1099,7 +1099,7 @@ logimm(ulong ir)
 	else
 		Xn = reg.r[Rn];
 	Wn = (ulong)Xn;
-	imm = N<<12 | imms<<5 | immr;
+	imm = decodebitmask(N, imms, immr);
 	SET(r);
 	switch(sf) {
 	case 0:	/* 32-bit */
