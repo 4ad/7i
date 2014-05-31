@@ -929,6 +929,8 @@ uncondbreg(ulong ir)
 	if(trace)
 		itrace("%s\tRn=%d", ci->name, Rn);
 	switch(opc) {
+	case 0:	/* BR */
+		reg.pc = reg.r[Rn] - 4;
 	case 2:	/* RET */
 		ret(reg.r[30]);
 		reg.pc = reg.r[30] - 4;
