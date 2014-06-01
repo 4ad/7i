@@ -74,6 +74,7 @@ struct Inst
 struct Registers
 {
 	ulong	pc;
+	ulong	prevpc;
 	ulong	ir;
 	Inst	*ip;
 	vlong	r[32];

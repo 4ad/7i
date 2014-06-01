@@ -374,15 +374,15 @@ dumpreg(void)
 {
 	int i;
 
-	Bprint(bioout, "PC  #%-8lux SP  #%-16llux LR #%-16llux NZCV: %d%d%d%d\n",
-				reg.pc, reg.r[31], reg.r[30], reg.pstate.N, reg.pstate.Z, reg.pstate.C, reg.pstate.V);
+	Bprint(bioout, "PC  #%-6lux (#%-6lux) LR  #%-16llux NZCV %d%d%d%d\n",
+				reg.pc, reg.prevpc, reg.r[30], reg.pstate.N, reg.pstate.Z, reg.pstate.C, reg.pstate.V);
 
 	for(i = 0; i < 31; i++) {
 		if((i%3) == 0 && i != 0)
 			Bprint(bioout, "\n");
 		Bprint(bioout, "R%-2d #%-16llux ", i, reg.r[i]);
 	}
-	Bprint(bioout, "\n");
+	Bprint(bioout, "SP  #%-16llux\n", reg.r[31]);
 }
 
 void

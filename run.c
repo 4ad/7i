@@ -621,6 +621,7 @@ run(void)
 			else
 				undef(reg.ir);
 		}
+		reg.prevpc = saved.pc;
 		reg.pc += 4;
 		if(bplist)
 			brkchk(reg.pc, Instruction);
