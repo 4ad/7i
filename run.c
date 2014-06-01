@@ -1143,9 +1143,12 @@ logimm(ulong ir)
 		break;
 	}
 	if(opc == 3) {	/* flags */
-		nz(r);
 		if(Rd != 31)
 			reg.r[Rd] = r;
+		if(sf)
+			nz(r);
+		else
+			nz(sext(r, 32));
 	} else {
 		reg.r[Rd] = r;
 	}
