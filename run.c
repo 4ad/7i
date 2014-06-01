@@ -931,9 +931,10 @@ uncondbreg(ulong ir)
 	switch(opc) {
 	case 0:	/* BR */
 		reg.pc = reg.r[Rn] - 4;
+		break;
 	case 2:	/* RET */
-		ret(reg.r[30]);
-		reg.pc = reg.r[30] - 4;
+		ret(reg.r[Rn]);
+		reg.pc = reg.r[Rn] - 4;
 		break;
 	default:
 		undef(ir);
@@ -958,7 +959,6 @@ addsubimm(ulong ir)
 	ulong sf, op, S, shift, imm12, Rn, Rd;
 	uvlong Xn, m, r;
 	ulong Wn, m32;
-	char ov;
 
 	getai(ir);
 	if(shift)
@@ -968,40 +968,56 @@ addsubimm(ulong ir)
 	m32 = (ulong)m;
 	Xn = reg.r[Rn];
 	Wn = (ulong)Xn;
-	SET(r, ov);	/* silence the compiler */
 	switch(sf) {
 	case 0:	/* 32-bit */
-		switch(op) {
-		case 1: /* SUB, SUBS */
-			m32 = ~m32 + 1;
-			/* fallthrough */
-		case 0:	/* ADD, ADDS */
-			r = Wn + m32;
-			ov = ov32(Wn, m32, r);
+		switch(op<<1|S) {
+		case 0:	/* ADD */
+			reg.r[Rd] = (ulong)(Wn + m32);
+			break;
+		case 1:	/* ADDS */
+			r = (ulong)(Wn + m32);
+			if(Rd != 31)
+				reg.r[Rd] = r;
+			nz(sext(r, 32));
+			reg.pstate.V = ov32(Wn, m, r);
+			break;
+		case 2:	/* SUB */
+			reg.r[Rd] = (ulong)(Wn - m32);;
+			break;
+		case 3:	/* SUBS */
+			r = (ulong)(Wn - m32);
+			if(Rd != 31)
+				reg.r[Rd] = r;
+			nz(sext(r, 32));
+			reg.pstate.V = ov32(Wn, -m32, r);
 			break;
 		}
 		break;
 	case 1:	/* 64-bit */
-		switch(op) {
-		case 1: /* SUB, SUBS */
-			m = ~m + 1;
-			/* fallthrough */
-		case 0:	/* ADD, ADDS */
+		switch(op<<1|S) {
+		case 0:	/* ADD */
+			reg.r[Rd] = Xn + m;
+			break;
+		case 1:	/* ADDS */
 			r = Xn + m;
-			ov = ov64(Xn, m, r);;
+			if(Rd != 31)
+				reg.r[Rd] = r;
+			nz(r);
+			reg.pstate.V = ov64(Xn, m, r);
+			break;
+		case 2:	/* SUB */
+			reg.r[Rd] = Xn - m;
+			break;
+		case 3:	/* SUBS */
+			r = Xn - m;
+			if(Rd != 31)
+				reg.r[Rd] = r;
+			nz(r);
+			reg.pstate.V = ov64(Xn, -m, r);
 			break;
 		}
 		break;
 	}
-	if(S) {	/* flags */
-		if(Rd != 31)
-			reg.r[Rd] = r;
-		nz(r);
-		reg.pstate.V = ov;
-	} else {
-		reg.r[Rd] = r;
-	}
-
 	if(trace)
 		itrace("%s\tshift=%d, imm12=%d, Rn=%d, Rd=%d", ci->name, shift, imm12, Rn, Rd);
 }
