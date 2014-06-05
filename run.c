@@ -829,10 +829,31 @@ void
 cmpb(ulong ir)
 {
 	ulong sf, op, imm19, Rt;
+	uvlong addr, Xt;
+	ulong Wt;
 
 	getcmpb(ir);
-	USED(sf, op);
-	undef(ir);
+	Xt = (Rt != 31)? reg.r[Rt] : 0;
+	Wt = (ulong)Xt;
+	addr = reg.pc + sext(imm19, 19)<<2;
+	switch(sf<<1|op) {
+	case 0:	/* 32-bit CBZ */
+		if(Wt == 0)
+			reg.pc = addr - 4;
+		break;
+	case 2:	/* 64-bit CBZ */
+		if(Xt == 0)
+			reg.pc = addr - 4;
+		break;
+	case 1:	/* 32-bit CBNZ */
+		if(Wt != 0)
+			reg.pc = addr - 4;
+		break;
+	case 3:	/* 64-bit CBNZ */
+		if(Xt != 0)
+			reg.pc = addr - 4;
+		break;
+	}
 	if(trace)
 		itrace("%s\timm19=%d, Rt=%d", ci->name, imm19, Rt);
 }
