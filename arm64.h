@@ -6,6 +6,7 @@
 #define	UREGADDR	(USERADDR+BY2PG-4-0xA0)
 #define	REGOFF(x)	offsetof(Ureg, x)
 
+typedef struct Pstate Pstate;
 typedef struct Registers Registers;
 typedef struct Segment Segment;
 typedef struct Memory Memory;
@@ -71,6 +72,11 @@ struct Inst
 	int	taken;
 };
 
+struct Pstate
+{
+	char	N, Z, C, V;
+};
+
 struct Registers
 {
 	ulong	pc;
@@ -78,9 +84,7 @@ struct Registers
 	ulong	ir;
 	Inst	*ip;
 	vlong	r[32];
-	struct {
-		char	N, Z, C, V;
-	} pstate;
+	Pstate;
 	double	fd[32];
 };
 

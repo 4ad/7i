@@ -9,11 +9,8 @@ uvlong	decodebitmask(ulong, ulong, ulong);
 void	call(uvlong);
 void	ret(uvlong);
 char	runcond(ulong);
-ulong	s32(ulong);
-ulong	s64(uvlong);
-char	ov32(ulong, ulong, ulong);
-char	ov64(uvlong, uvlong, uvlong);
-void	nz(vlong);
+Pstate	add32(ulong, ulong, ulong *);
+Pstate	add64(uvlong, uvlong, uvlong *);
 vlong	sext(ulong, char);
 vlong	doshift(ulong, vlong, ulong, ulong);
 vlong	shift64(vlong, ulong, ulong);
@@ -453,25 +450,25 @@ runcond(ulong cond)
 	SET(r);	/* silence the compiler */
 	switch(cond>>1) {
 	case 0:	/* EQ or NE */
-		r = reg.pstate.Z;
+		r = reg.Z;
 		break;
 	case 1:	/* CS or CC */
-		r = reg.pstate.C;
+		r = reg.C;
 		break;
 	case 2:	/* MI or PL */
-		r = reg.pstate.N;
+		r = reg.N;
 		break;
 	case 3:	/* VS or VC */
-		r = reg.pstate.V;
+		r = reg.V;
 		break;
 	case 4:	/* HI or LS */
-		r = reg.pstate.C && reg.pstate.Z == 0;
+		r = reg.C && reg.Z == 0;
 		break;
 	case 5:	/* GE or LT */
-		r = reg.pstate.N == reg.pstate.V;
+		r = reg.N == reg.V;
 		break;
 	case 6:	/* GT or LE */
-		r = reg.pstate.N == reg.pstate.V && reg.pstate.Z == 0;
+		r = reg.N == reg.V && reg.Z == 0;
 		break;
 	case 7:	/* AL */
 		r = 1;
@@ -482,45 +479,34 @@ runcond(ulong cond)
 	return r;
 }
 
-ulong
-s32(ulong v)
+Pstate
+add32(ulong x, ulong y, ulong *r)
 {
-	return v >> 31;
+	Pstate p;
+	ulong usum;
+
+	usum = x + y;
+	p.N = usum >> 31;
+	p.Z = (usum == 0);
+	p.C = (usum < x) || (usum < y);
+	p.V = (x>>31 == y>>31) && (usum>>31 != x>>31);
+	*r = usum;
+	return p;
 }
 
-ulong
-s64(uvlong v)
+Pstate
+add64(uvlong x, uvlong y, uvlong *r)
 {
-	return v >> 63;
-}
+	Pstate p;
+	uvlong usum;
 
-char
-ov32(ulong a, ulong b, ulong r)
-{
-	if((s32(a)==s32(b)) && (s32(r) != s32(a)))
-		return 1;
-	return 0;
-}
-
-char
-ov64(uvlong a, uvlong b, uvlong r)
-{
-	if((s64(a)==s64(b)) && (s64(r)!=s64(a)))
-		return 1;
-	return 0;
-}
-
-void
-nz(vlong v)
-{
-	if(v < 0)
-		reg.pstate.N = 1;
-	else
-		reg.pstate.N = 0;
-	if(v == 0)
-		reg.pstate.Z = 1;
-	else
-		reg.pstate.Z = 0;
+	usum = x + y;
+	p.N = usum >> 63;
+	p.Z = (usum == 0);
+	p.C = (usum < x) || (usum < y);
+	p.V = (x>>63 == y>>63) && (usum>>63 != x>>63);
+	*r = usum;
+	return p;
 }
 
 /* sext sign extends a bit-sized number encoded in v to a vlong. */
@@ -583,13 +569,13 @@ shift32(long v, ulong typ, ulong bits)
 char
 pstatecmp(Registers *a, Registers *b)
 {
-	if(a->pstate.N != b->pstate.N)
+	if(a->N != b->N)
 		return 1;
-	if(a->pstate.Z != b->pstate.Z)
+	if(a->Z != b->Z)
 		return 1;
-	if(a->pstate.C != b->pstate.C)
+	if(a->C != b->C)
 		return 1;
-	if(a->pstate.V != b->pstate.V)
+	if(a->V != b->V)
 		return 1;
 	return 0;
 }
@@ -613,7 +599,7 @@ run(void)
 						print("R%d	0x%llux -> 0x%llux	(%+lld 0x%llux)\n", i, saved.r[i], reg.r[i], reg.r[i] - saved.r[i], reg.r[i] - saved.r[i]);
 				}
 				if(pstatecmp(&saved, &reg))
-					print("NZCV	%d%d%d%d -> %d%d%d%d\n", saved.pstate.N, saved.pstate.Z, saved.pstate.C, saved.pstate.V, reg.pstate.N, reg.pstate.Z, reg.pstate.C, reg.pstate.V);
+					print("NZCV	%d%d%d%d -> %d%d%d%d\n", saved.N, saved.Z, saved.C, saved.V, reg.N, reg.Z, reg.C, reg.V);
 			}
 		} else {
 			if(ci && ci->name && trace)
@@ -959,8 +945,8 @@ addsubimm(ulong ir)
 {
 	ulong sf, op, S, shift, imm12, Rn, Rd;
 	uvlong Xn, m, r;
-	ulong Wn, m32;
-	char ov;
+	ulong Wn, m32, r32;
+	Pstate p;
 
 	getai(ir);
 	if(shift)
@@ -970,7 +956,7 @@ addsubimm(ulong ir)
 	m32 = (ulong)m;
 	Xn = reg.r[Rn];
 	Wn = (ulong)Xn;
-	SET(r, ov);	/* silence the compiler */
+	SET(r);	/* silence the compiler */
 	switch(sf) {
 	case 0:	/* 32-bit */
 		switch(op) {
@@ -978,8 +964,8 @@ addsubimm(ulong ir)
 			m32 = ~m32 + 1;
 			/* fallthrough */
 		case 0:	/* ADD, ADDS */
-			r = Wn + m32;
-			ov = ov32(Wn, m32, r);
+			p = add32(Wn, m32, &r32);
+			r = r32;
 			break;
 		}
 		break;
@@ -989,8 +975,7 @@ addsubimm(ulong ir)
 			m = ~m + 1;
 			/* fallthrough */
 		case 0:	/* ADD, ADDS */
-			r = Xn + m;
-			ov = ov64(Xn, m, r);;
+			p = add64(Xn, m, &r);
 			break;
 		}
 		break;
@@ -998,11 +983,7 @@ addsubimm(ulong ir)
 	if(S) {	/* flags */
 		if(Rd != 31)
 			reg.r[Rd] = r;
-		if(sf)
-			nz(r);
-		else
-			nz(sext(r, 32));
-		reg.pstate.V = ov;
+		reg.Pstate = p;
 	} else {
 		reg.r[Rd] = r;
 	}
@@ -1146,10 +1127,13 @@ logimm(ulong ir)
 	if(opc == 3) {	/* flags */
 		if(Rd != 31)
 			reg.r[Rd] = r;
-		if(sf)
-			nz(r);
-		else
-			nz(sext(r, 32));
+		if(sf) {
+			reg.N = r>>63 & 1;
+			reg.Z = (r == 0);
+		} else {
+			reg.N = r>>31 & 1;
+			reg.Z = ((ulong)r == 0);
+		}
 	} else {
 		reg.r[Rd] = r;
 	}
@@ -1261,8 +1245,8 @@ addsubsreg(ulong ir)
 {
 	ulong sf, op, S, shift, Rm, imm6, Rn, Rd;
 	uvlong Xn, Xm, m, r;
-	ulong Wn, m32;
-	char ov;
+	ulong Wn, m32, r32;
+	Pstate p;
 
 	getasr(ir);
 	if(Rm == 31)
@@ -1276,7 +1260,7 @@ addsubsreg(ulong ir)
 	else
 		Xn = reg.r[Rn];
 	Wn = (ulong)Xn;
-	SET(r, ov);	/* silence the compiler */
+	SET(r);	/* silence the compiler */
 	switch(sf) {
 	case 0:	/* 32-bit */
 		switch(op) {
@@ -1284,8 +1268,8 @@ addsubsreg(ulong ir)
 			m32 = ~m32 + 1;
 			/* fallthrough */
 		case 0:	/* ADD, ADDS */
-			r = Wn + m32;
-			ov = ov32(Wn, m32, r);
+			p = add32(Wn, m32, &r32);
+			r = r32;
 			break;
 		}
 		break;
@@ -1295,8 +1279,7 @@ addsubsreg(ulong ir)
 			m = ~m + 1;
 			/* fallthrough */
 		case 0:	/* ADD, ADDS */
-			r = Xn + m;
-			ov = ov64(Xn, m, r);
+			p = add64(Xn, m, &r);
 			break;
 		}
 		break;
@@ -1304,8 +1287,7 @@ addsubsreg(ulong ir)
 	if(Rd != 31)
 		reg.r[Rd] = r;
 	if(S) {	/* flags */
-		nz(r);
-		reg.pstate.V = ov;
+		reg.Pstate = p;
 	}
 	if(trace)
 		itrace("%s\tshift=%d, Rm=%d, imm6=%d, Rn=%d, Rd=%d", ci->name, shift, Rm, imm6, Rn, Rd);
