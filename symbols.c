@@ -82,7 +82,7 @@ stktrace(int modif)
 		Bprint(bioout, "%s(", s.name);
 		printparams(&s, sp);
 		printsource(s.value);
-		Bprint(bioout, " called from ");
+		Bprint(bioout, "\n\tcalled from ");
 		symoff(buf, sizeof(buf), pc-4, CTEXT);
 		Bprint(bioout, buf);
 		Bprint(bioout, " ");
