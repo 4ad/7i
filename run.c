@@ -1612,15 +1612,38 @@ void
 ldstex(ulong ir)
 {
 	ulong size, o2, L, o1, Rs, o0, Rt2, Rn, Rt;
-	uvlong addr, r;
+	uvlong addr, r, Xt;
 
 	getlsx(ir);
 	addr = reg.r[Rn];
 	SET(r);
-	USED(o2);
+	USED(Rt2, o2);
+	Xt = (Rt != 31)? reg.r[Rt] : 0;
 	switch(L) {
 	case 0:	/* stores */
-		undef(ir);
+		switch(size) {
+		case 3:	/* 64-bit */
+			switch(o1) {
+			case 0:	/* register */
+				switch(o0) {
+				case 0: /* STXR */
+					putmem_v(addr, Xt);
+					reg.r[Rs] = 0;
+					break;
+				case 1:	/* store-release */
+					undef(ir);
+					break;
+				}
+				break;
+			case 1:	/* register-pair */
+				undef(ir);
+				break;
+			}
+			break;
+		default:
+			undef(ir);
+			break;
+		}
 		break;
 	case 1:	/* loads */
 		switch(size) {
