@@ -263,7 +263,7 @@ Inst itab[] =
 	[Clsx+54]	{ldstex, "LDXP",  	 Iload}, /* 1526 */
 	[Clsx+55]	{ldstex, "LDAXP", 	 Iload}, /* 1527 */
 	[Clsx+57]	{ldstex, "STLR",  	 Iload}, /* 1529 */
-	[Clsx+61]	{ldstex, "STLR",  	 Iload}, /* 1533 */
+	[Clsx+61]	{ldstex, "LDAR",  	 Iload}, /* 1533 */
 
 	/* load/store no-alloc pair (off) */
 	[Clsnp+ 0]	{ldstnoallocp, "STNP",  	Istore}, /* 1536 */
@@ -1585,7 +1585,7 @@ ops: size<31,30> o2<23> L<22> o1<21> o0<15>
 	LDXP  	size=3	o2=0	L=1	o1=1	o0=0	
 	LDAXP 	size=3	o2=0	L=1	o1=1	o0=1	
 	STLR  	size=3	o2=1	L=0	o1=0	o0=1	
-	STLR  	size=3	o2=1	L=1	o1=0	o0=1	
+	LDAR  	size=3	o2=1	L=1	o1=0	o0=1	
 */
 void
 ldstex(ulong ir)
