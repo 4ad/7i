@@ -262,7 +262,7 @@ Inst itab[] =
 	[Clsx+53]	{ldstex, "LDAXR", 	 Iload}, /* 1525 */
 	[Clsx+54]	{ldstex, "LDXP",  	 Iload}, /* 1526 */
 	[Clsx+55]	{ldstex, "LDAXP", 	 Iload}, /* 1527 */
-	[Clsx+57]	{ldstex, "STLR",  	 Iload}, /* 1529 */
+	[Clsx+57]	{ldstex, "STLR",  	Istore}, /* 1529 */
 	[Clsx+61]	{ldstex, "LDAR",  	 Iload}, /* 1533 */
 
 	/* load/store no-alloc pair (off) */
@@ -1591,10 +1591,43 @@ void
 ldstex(ulong ir)
 {
 	ulong size, o2, L, o1, Rs, o0, Rt2, Rn, Rt;
+	uvlong addr, r;
 
 	getlsx(ir);
-	USED(size, o2, L, o1, o0);
-	undef(ir);
+	addr = reg.r[Rn];
+	SET(r);
+	USED(o2);
+	switch(L) {
+	case 0:	/* stores */
+		undef(ir);
+		break;
+	case 1:	/* loads */
+		switch(size) {
+		case 3:	/* 64-bit */
+			switch(o1) {
+			case 0:	/* register */
+				switch(o0) {
+				case 0: /* LDXR */
+					r = getmem_v(addr);
+					break;
+				case 1:	/* load-acquire */
+					undef(ir);
+					break;
+				}
+				break;
+			case 1:	/* register-pair */
+				undef(ir);
+				break;
+			}
+			break;
+		default:
+			undef(ir);
+			break;
+		}
+		if(Rt != 31)
+			reg.r[Rt] = r;
+		break;
+	}
 	if(trace)
 		itrace("%s\tRs=%d, Rt2=%d, Rn=%d, Rt=%d", ci->name, Rs, Rt2, Rn, Rt);
 }
