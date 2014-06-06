@@ -45,6 +45,7 @@ enum
 	Ifloat,
 	Inop,
 	Icontrol,
+	Isys,
 };
 
 struct Icache
@@ -212,45 +213,47 @@ extern		ulong bits[];
 enum {
 	Ccmpb  =    0,	/* compare and branch */
 	Ccb    =   64,	/* conditional branch */
-	Csys   =  128,	/* system */
-	Ctb    =  192,	/* test and branch */
-	Cubi   =  256,	/* unconditional branch imm */
-	Cubr   =  320,	/* unconditional branch reg */
-	Cai    =  384,	/* add/sub imm */
-	Cab    =  448,	/* bitfield */
-	Cax    =  512,	/* extract */
-	Cali   =  576,	/* logic imm */
-	Camwi  =  640,	/* move wide imm */
-	Capcr  =  704,	/* PC-rel addr */
-	Car    =  768,	/* add/sub extended reg */
-	Casr   =  832,	/* add/sub shift-reg */
-	Cac    =  896,	/* add/sub carry */
-	Caci   =  960,	/* cond compare imm */
-	Cacr   = 1024,	/* cond compare reg */
-	Cacs   = 1088,	/* cond select */
-	Ca1    = 1152,	/* data proc 1 src */
-	Ca2    = 1216,	/* data proc 2 src */
-	Ca3    = 1280,	/* data proc 3 src */
-	Calsr  = 1344,	/* logic shift-reg */
-	Clsr   = 1408,	/* load/store reg */
-	Clsx   = 1472,	/* load/store ex */
-	Clsnp  = 1536,	/* load/store no-alloc pair (off) */
-	Clspos = 1600,	/* load/store reg (imm post-index) */
-	Clspre = 1664,	/* load/store reg (imm pre-index) */
-	Clso   = 1728,	/* load/store reg (off) */
-	Clsu   = 1792,	/* load/store reg (unpriv) */
-	Clsuci = 1856,	/* load/store reg (unscaled imm) */
-	Clsusi = 1920,	/* load/store reg (unsigned imm) */
-	Clsrpo = 1984,	/* load/store reg-pair (off) */
-	Clsppo = 2048,	/* load/store reg-pair (post-index) */
-	Clsppr = 2112,	/* load/store reg-pair (pre-index) */
-	Cundef = 2176	/* undefined instruction */
+	Cex    =  128,	/* exception generation */
+	Csys   =  192,	/* system */
+	Ctb    =  256,	/* test and branch */
+	Cubi   =  320,	/* unconditional branch imm */
+	Cubr   =  384,	/* unconditional branch reg */
+	Cai    =  448,	/* add/sub imm */
+	Cab    =  512,	/* bitfield */
+	Cax    =  576,	/* extract */
+	Cali   =  640,	/* logic imm */
+	Camwi  =  704,	/* move wide imm */
+	Capcr  =  768,	/* PC-rel addr */
+	Car    =  832,	/* add/sub extended reg */
+	Casr   =  896,	/* add/sub shift-reg */
+	Cac    =  960,	/* add/sub carry */
+	Caci   = 1024,	/* cond compare imm */
+	Cacr   = 1088,	/* cond compare reg */
+	Cacs   = 1152,	/* cond select */
+	Ca1    = 1216,	/* data proc 1 src */
+	Ca2    = 1280,	/* data proc 2 src */
+	Ca3    = 1344,	/* data proc 3 src */
+	Calsr  = 1408,	/* logic shift-reg */
+	Clsr   = 1472,	/* load/store reg */
+	Clsx   = 1536,	/* load/store ex */
+	Clsnp  = 1600,	/* load/store no-alloc pair (off) */
+	Clspos = 1664,	/* load/store reg (imm post-index) */
+	Clspre = 1728,	/* load/store reg (imm pre-index) */
+	Clso   = 1792,	/* load/store reg (off) */
+	Clsu   = 1856,	/* load/store reg (unpriv) */
+	Clsuci = 1920,	/* load/store reg (unscaled imm) */
+	Clsusi = 1984,	/* load/store reg (unsigned imm) */
+	Clsrpo = 2048,	/* load/store reg-pair (off) */
+	Clsppo = 2112,	/* load/store reg-pair (post-index) */
+	Clsppr = 2176,	/* load/store reg-pair (pre-index) */
+	Cundef = 2208	/* undefined instruction */
 };
 
 /* initialize variables in Inst functions */
 #define getcmpb(i) 	sf = (i>>31)&0x1; op = (i>>24)&0x1; imm19 = (i>>5)&0x7ffff; Rt = i&0x1f; 
 #define getcb(i)   	o1 = (i>>24)&0x1; imm19 = (i>>5)&0x7ffff; o0 = (i>>4)&0x1; cond = i&0xf; 
-#define getsys(i)  	opc = (i>>21)&0x7; imm16 = (i>>5)&0xffff; LL = i&0x3; 
+#define getex(i)   	opc = (i>>21)&0x7; imm16 = (i>>5)&0xffff; LL = i&0x3; 
+#define getsys(i)  	CRn = (i>>12)&0x7; CRm = (i>>8)&0xf; op2 = (i>>5)&0x7; Rt = i&0x1f;  
 #define gettb(i)   	b5 = (i>>31)&0x1; op = (i>>24)&0x1; b40 = (i>>19)&0x1f; imm14 = (i>>5)&0x3fff; Rt = i&0x1f; 
 #define getubi(i)  	op = (i>>31)&0x1; imm26 = i&0x3ffffff; 
 #define getubr(i)  	opc = (i>>21)&0xf; op2 = (i>>16)&0x1f; Rn = (i>>5)&0x1f; 
@@ -287,7 +290,8 @@ enum {
 class to get the super-opcode (xo) */
 #define opcmpb(i) 	((i>>24)&0x1|(((i>>31)&0x1)<<1))
 #define opcb(i)   	((i>>4)&0x1)
-#define opsys(i)  	(i&0x3|(((i>>21)&0x7)<<2))
+#define opex(i)   	(i&0x3|(((i>>21)&0x7)<<2))
+#define opsys(i)  	((i>>5)&0x7|(((i>>12)&0x7)<<3))
 #define optb(i)   	((i>>24)&0x1)
 #define opubi(i)  	((i>>31)&0x1)
 #define opubr(i)  	((i>>16)&0x1f|(((i>>21)&0xf)<<5))

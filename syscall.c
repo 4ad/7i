@@ -706,7 +706,7 @@ void (*systab[])(void)	={
 	[PWRITE]	syspwrite,
 };
 
-/* system
+/* exception generation
 params: imm16<20,5> 
 ops: opc<23,21> LL<1,0> 
 	SVC   	opc=0	LL=1	
@@ -717,7 +717,7 @@ syscall(ulong ir)
 	ulong opc, imm16, LL;
 	int call;
 
-	getsys(ir);
+	getex(ir);
 	if(opc != 0 || LL != 1)
 		undef(ir);
 	call = imm16;
