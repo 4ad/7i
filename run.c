@@ -965,12 +965,15 @@ uncondbreg(ulong ir)
 	case 0:	/* BR */
 		reg.pc = reg.r[Rn] - 4;
 		break;
+	case 1:	/* BLR */
+		call(reg.r[Rn]);
+		reg.r[30] = reg.pc + 4;
+		reg.pc = reg.r[Rn] - 4;
+		break;
 	case 2:	/* RET */
 		ret(reg.r[Rn]);
 		reg.pc = reg.r[Rn] - 4;
 		break;
-	default:
-		undef(ir);
 	}
 }
 
