@@ -898,8 +898,8 @@ sys(ulong ir)
 	ulong CRn, CRm, op2, Rt;
 
 	getsys(ir);
-	USED(CRn, op2);
-	undef(ir);
+	if(CRn != 3 || op2 != 2)
+		undef(ir);
 	if(trace)
 		itrace("%s\tCRm=%d, Rt=%d", ci->name, CRm, Rt);
 }
