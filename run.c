@@ -1482,10 +1482,35 @@ void
 dp2(ulong ir)
 {
 	ulong sf, Rm, opcode, Rn, Rd;
+	uvlong Xm, Xn, r; 
+	ulong Wm, Wn;
 
 	geta2(ir);
-	USED(sf, opcode);
-	undef(ir);
+	Xm = (Rm == 31)? reg.r[Rm] : 0;
+	Wm = (ulong)Xm;
+	Xn = (Rn == 31)? reg.r[Rn] : 0;
+	Wn = (ulong)Xn;
+	SET(r);
+	switch(sf) {
+	case 0:	/* 32-bit */
+		switch(opcode) {
+		case 2:	/* UDIV */
+			if(Wm != 0)
+				r = Wn / Wm;
+			else
+				r = 0;
+			break;
+		default:
+			undef(ir);
+			break;
+		}
+		break;
+	case 1:	/* 64-bit */
+		undef(ir);
+		break;
+	}
+	if(Rd != 31)
+		reg.r[Rd] = r;
 	if(trace)
 		itrace("%s\tRm=%d, Rn=%d, Rd=%d", ci->name, Rm, Rn, Rd);
 }
@@ -1502,10 +1527,35 @@ void
 dp3(ulong ir)
 {
 	ulong sf, op31, Rm, o0, Ra, Rn, Rd;
+	uvlong Xm, Xn, Xa, r; 
+	ulong Wm, Wn, Wa;
 
 	geta3(ir);
-	USED(sf, op31, o0);
-	undef(ir);
+	Xm = (Rm == 31)? reg.r[Rm] : 0;
+	Wm = (ulong)Xm;
+	Xn = (Rn == 31)? reg.r[Rn] : 0;
+	Wn = (ulong)Xn;
+	Xa = (Ra == 31)? reg.r[Ra] : 0;
+	Wa = (ulong)Xa;
+	USED(op31);
+	SET(r);
+	switch(sf) {
+	case 0:	/* 32-bit */
+		switch(o0) {
+		case 0:	/* MADD */
+			r = (ulong)(Wa + Wn * Wm);
+			break;
+		case 1:	/* MSUB */
+			r = (ulong)(Wa - Wn * Wm);
+			break;
+		}
+		break;
+	case 1:	/* 64-bit */
+		undef(ir);
+		break;
+	}
+	if(Rd != 31)
+		reg.r[Rd] = r;
 	if(trace)
 		itrace("%s\tRm=%d, Ra=%d, Rn=%d, Rd=%d", ci->name, Rm, Ra, Rn, Rd);
 }
