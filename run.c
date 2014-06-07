@@ -1943,10 +1943,29 @@ void
 ldstreguscaleimm(ulong ir)
 {
 	ulong size, V, opc, imm9, Rn, Rt;
+	uvlong r, addr;
 
 	getlsuci(ir);
-	USED(size, V, opc);
-	undef(ir);
+	USED(V);
+	SET(r);
+	addr = reg.r[Rn] + sext(imm9, 9);
+	switch(size) {
+	case 2:	/* 32-bit */
+		switch(opc) {
+		case 2:	/* LDURSW */
+			r = sext(getmem_w(addr), 32);
+			break;
+		default:
+			undef(ir);
+			break;
+		}
+		break;
+	default:
+		undef(ir);
+		break;
+	}
+	if(Rt != 31)
+		reg.r[Rt] = r;
 	if(trace)
 		itrace("%s\timm9=%d, Rn=%d, Rt=%d", ci->name, imm9, Rn, Rt);
 }
