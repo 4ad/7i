@@ -821,7 +821,12 @@ ilock(int)
 void
 undef(ulong ir)
 {
-	Bprint(bioout, "undefined instruction IR #%.8lux (xo=%lud, pc=#%.8lux)\n", ir, getxo(ir), reg.pc);
+	ulong xo;
+	xo = getxo(ir);
+	if(xo != Cundef)
+		Bprint(bioout, "undefined instruction #%.8lux (xo=%lud, name=%s, pc=#%.8lux)\n", ir, xo, itab[xo].name, reg.pc);
+	else
+		Bprint(bioout, "undefined instruction #%.8lux (xo=%lud (Cundef), pc=#%.8lux)\n", ir, xo, reg.pc);
 	longjmp(errjmp, 0);
 }
 
