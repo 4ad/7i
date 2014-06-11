@@ -1069,7 +1069,7 @@ bitfield(ulong ir)
 		src = ((uvlong)reg.r[Rn]>>immr)&((1LL<<(imms-immr+1))-1);
 		switch(opc) {
 		case 0: /* SBFM */
-			reg.r[Rd] = sext(src, imms - immr) >> immr;
+			reg.r[Rd] = sext(src, imms - immr);
 			break;
 		case 1:	/* BFM */
 			reg.r[Rd] = (reg.r[Rd]&~((1LL<<(imms-immr+1))-1)) | src;
