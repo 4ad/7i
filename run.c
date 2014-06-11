@@ -1993,17 +1993,33 @@ void
 ldstreguscaleimm(ulong ir)
 {
 	ulong size, V, opc, imm9, Rn, Rt;
-	uvlong r, addr;
+	uvlong r, addr, Xt;
+	ulong Wt;
 
 	getlsuci(ir);
+	Xt = (Rt != 31)? reg.r[Rt] : 0;
+	Wt = (ulong)Xt;
 	USED(V);
 	SET(r);
 	addr = reg.r[Rn] + sext(imm9, 9);
 	switch(size) {
 	case 2:	/* 32-bit */
 		switch(opc) {
+		case 0:	/* STUR */
+			putmem_w(addr, Wt);
+			break;
 		case 2:	/* LDURSW */
 			r = sext(getmem_w(addr), 32);
+			break;
+		default:
+			undef(ir);
+			break;
+		}
+		break;
+	case 3:	/* 64-bit */
+		switch(opc) {
+		case 1:	/* LDUR */
+			r = getmem_v(addr);
 			break;
 		default:
 			undef(ir);
