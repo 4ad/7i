@@ -1634,6 +1634,12 @@ logsreg(ulong ir)
 		else
 			r = Wn | m32;
 		break;
+	case 4:	/* EOR */
+		if(sf == 1)
+			r = Xn ^ m;
+		else
+			r = Wn ^ m32;
+		break;
 	default:
 		undef(ir);
 	}
