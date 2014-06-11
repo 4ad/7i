@@ -1486,9 +1486,9 @@ dp2(ulong ir)
 	ulong Wm, Wn;
 
 	geta2(ir);
-	Xm = (Rm == 31)? reg.r[Rm] : 0;
+	Xm = (Rm != 31)? reg.r[Rm] : 0;
 	Wm = (ulong)Xm;
-	Xn = (Rn == 31)? reg.r[Rn] : 0;
+	Xn = (Rn != 31)? reg.r[Rn] : 0;
 	Wn = (ulong)Xn;
 	SET(r);
 	switch(sf) {
@@ -1531,11 +1531,11 @@ dp3(ulong ir)
 	ulong Wm, Wn, Wa;
 
 	geta3(ir);
-	Xm = (Rm == 31)? reg.r[Rm] : 0;
+	Xm = (Rm != 31)? reg.r[Rm] : 0;
 	Wm = (ulong)Xm;
-	Xn = (Rn == 31)? reg.r[Rn] : 0;
+	Xn = (Rn != 31)? reg.r[Rn] : 0;
 	Wn = (ulong)Xn;
-	Xa = (Ra == 31)? reg.r[Ra] : 0;
+	Xa = (Ra != 31)? reg.r[Ra] : 0;
 	Wa = (ulong)Xa;
 	USED(op31);
 	SET(r);
@@ -1806,7 +1806,7 @@ ldstregimmpost(ulong ir)
 	USED(V);
 	/* post-index calculation */
 	addr = reg.r[Rn];
-	Xt = (Rt == 31)? 0 : reg.r[Rt];
+	Xt = (Rt != 31)? reg.r[Rt] : 0;
 	switch(opc) {
 	case 0:	/* stores */
 		switch(size) {
@@ -1862,7 +1862,7 @@ ldstregimmpre(ulong ir)
 	USED(V);
 	/* pre-index calculation */
 	addr = reg.r[Rn] + sext(imm9, 9);
-	Xt = (Rt == 31)? 0 : reg.r[Rt];
+	Xt = (Rt != 31)? reg.r[Rt] : 0;
 	switch(opc) {
 	case 0:	/* stores */
 		switch(size) {
@@ -1913,7 +1913,7 @@ ldstregoff(ulong ir)
 	default:
 		undef(ir);
 	case 3:	/* LSL */
-		m = (Rm == 31)? 0 : reg.r[Rm];
+		m = (Rm != 31)? reg.r[Rm] : 0;
 		addr = reg.r[Rn];
 		if(S)
 			addr += reg.r[m] << 2;
@@ -2046,7 +2046,7 @@ ldstregusignimm(ulong ir)
 
 	getlsusi(ir);
 	USED(V);
-	Xt = (Rt == 31)? 0 : reg.r[Rt];
+	Xt = (Rt != 31)? reg.r[Rt] : 0;
 	addr = reg.r[Rn] + (imm12 << size);
 	switch(opc) {
 	case 0:	/* stores */
