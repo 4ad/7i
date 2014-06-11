@@ -1500,13 +1500,35 @@ dp2(ulong ir)
 			else
 				r = 0;
 			break;
+		case 3:	/* SDIV */
+			if(Wm != 0)
+				r = (ulong)((long)Wn / (long)Wm);
+			else
+				r = 0;
+			break;
 		default:
 			undef(ir);
 			break;
 		}
 		break;
 	case 1:	/* 64-bit */
-		undef(ir);
+		switch(opcode) {
+		case 2:	/* UDIV */
+			if(Xm != 0)
+				r = Xn / Xm;
+			else
+				r = 0;
+			break;
+		case 3:	/* SDIV */
+			if(Xm != 0)
+				r = (uvlong)((vlong)Wn / (vlong)Wm);
+			else
+				r = 0;
+			break;
+		default:
+			undef(ir);
+			break;
+		}
 		break;
 	}
 	if(Rd != 31)
