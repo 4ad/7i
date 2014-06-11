@@ -441,8 +441,8 @@ ret(uvlong npc)
 
 	if(calltree) {
 		findsym(npc, CTEXT, &s);
-		Bprint(bioout, "%8lux return to #%llux %s r30=#%llux (%lld)\n",
-					reg.pc, npc, s.name, reg.r[30], reg.r[30]);
+		Bprint(bioout, "%8lux return to #%llux %s r0=#%llux\n",
+					reg.pc, npc, s.name, reg.r[0]);
 	}
 }
 
