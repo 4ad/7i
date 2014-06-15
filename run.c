@@ -1573,7 +1573,14 @@ dp3(ulong ir)
 		}
 		break;
 	case 1:	/* 64-bit */
-		undef(ir);
+		switch(o0) {
+		case 0:	/* MADD */
+			r = Xa + Xn * Xm;
+			break;
+		case 1:	/* MSUB */
+			r = Xa - Xn * Xm;
+			break;
+		}
 		break;
 	}
 	if(Rd != 31)
