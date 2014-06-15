@@ -136,9 +136,8 @@ greg(int f, ulong off)
 	int n;
 	uvlong l;
 	uchar wd[BY2WD];
-	
-	seek(f, off, 0);
-	n = read(f, wd, BY2WD);
+
+	n = pread(f, wd, BY2WD, off);
 	if(n != BY2WD)
 		fatal(1, "read register");
 
@@ -174,9 +173,8 @@ seginit(int fd, Segment *s, int idx, ulong vastart, ulong vaend)
 	int n;
 
 	while(vastart < vaend) {
-		seek(fd, vastart, 0);
 		s->table[idx] = emalloc(BY2PG);
-		n = read(fd, s->table[idx], BY2PG);
+		n = pread(fd, s->table[idx], BY2PG, vastart);
 		if(n != BY2PG)
 			fatal(1, "data read");
 		vastart += BY2PG;
