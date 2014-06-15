@@ -314,15 +314,15 @@ initstk(int argc, char *argv[])
 	sp -= size;
 	sp &= ~7;
 	reg.r[31] = sp;
-	reg.r[3] = tos;		/* Plan 9 profiling clock, etc. */
+	reg.r[0] = tos;		/* Plan 9 profiling clock, etc. */
 
 	/* Push argc */
-	putmem_w(sp, argc+1);
+	putmem_v(sp, argc+1);
 	sp += BY2WD;
 
 	/* Compute sizeof(argv) and push argv[0] */
 	ap = sp+((argc+1)*BY2WD)+BY2WD;
-	putmem_w(sp, ap);
+	putmem_v(sp, ap);
 	sp += BY2WD;
 	
 	/* Build argv[0] string into stack */
@@ -333,14 +333,14 @@ initstk(int argc, char *argv[])
 
 	/* Loop through pushing the arguments */
 	for(i = 0; i < argc; i++) {
-		putmem_w(sp, ap);
+		putmem_v(sp, ap);
 		sp += BY2WD;
 		for(p = argv[i]; *p; p++)
 			putmem_b(ap++, *p);
 		putmem_b(ap++, '\0');
 	}
 	/* Null terminate argv */
-	putmem_w(sp, 0);
+	putmem_v(sp, 0);
 
 }
 
