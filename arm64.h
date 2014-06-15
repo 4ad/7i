@@ -202,7 +202,7 @@ extern		ulong bits[];
 
 /* Plan9 Kernel constants */
 #define	BY2PG		4096
-#define BY2WD		4
+#define BY2WD		8
 #define UTZERO		0x1000
 #define STACKTOP	0x00007ffffffff000ull
 #define STACKSIZE	0x10000

@@ -130,11 +130,11 @@ inithdr(int fd)
 	// machdata = &arm64mach;
 }
 
-ulong
+uvlong
 greg(int f, ulong off)
 {
 	int n;
-	ulong l;
+	uvlong l;
 	uchar wd[BY2WD];
 	
 	seek(f, off, 0);
@@ -142,10 +142,14 @@ greg(int f, ulong off)
 	if(n != BY2WD)
 		fatal(1, "read register");
 
-	l  = wd[0]<<24;
-	l |= wd[1]<<16;
-	l |= wd[2]<<8;
-	l |= wd[3];
+	l  = (uvlong)wd[0]<<56;
+	l |= (uvlong)wd[1]<<48;
+	l |= (uvlong)wd[2]<<40;
+	l |= (uvlong)wd[3]<<32;
+	l |= (uvlong)wd[4]<<24;
+	l |= (uvlong)wd[5]<<16;
+	l |= (uvlong)wd[6]<<8;
+	l |= (uvlong)wd[7];
 	return l;
 }
 
