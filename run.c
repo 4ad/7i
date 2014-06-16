@@ -1218,7 +1218,7 @@ movwimm(ulong ir)
 		if(sf)	/* 64-bit */
 			r = ~((uvlong)imm16 << ((uvlong)hw<<16));
 		else
-			r = ~(ulong)((uvlong)imm16 << ((uvlong)hw<<16));
+			r = (ulong)~((uvlong)imm16 << ((uvlong)hw<<16));
 		break;
 	case 2:	/* MOVZ */
 		if(sf)	/* 64-bit */
