@@ -133,7 +133,7 @@ putmem_w(uvlong addr, ulong data)
 	uchar *va;
 
 	if(addr&3) {
-		Bprint(bioout, "mem_address_not_aligned [store addr %.16llux]\n", addr);
+		Bprint(bioout, "mem_address_not_aligned [store addr %.16llux pc 0x%lux]\n", addr, reg.pc);
 		longjmp(errjmp, 0);
 	}
 
@@ -166,7 +166,7 @@ putmem_h(uvlong addr, short data)
 	uchar *va;
 
 	if(addr&1) {
-		Bprint(bioout, "mem_address_not_aligned [store addr %.16llux]\n", addr);
+		Bprint(bioout, "mem_address_not_aligned [store addr %.16llux] pc 0x%lux]\n", addr, reg.pc);
 		longjmp(errjmp, 0);
 	}
 

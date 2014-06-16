@@ -1216,15 +1216,15 @@ movwimm(ulong ir)
 	switch(opc) {
 	case 0:	/* MOVN */
 		if(sf)	/* 64-bit */
-			r = ~(imm16 << (hw<<16));
+			r = ~((uvlong)imm16 << ((uvlong)hw<<16));
 		else
-			r = ~(ulong)(imm16 << (hw<<16));
+			r = ~(ulong)((uvlong)imm16 << ((uvlong)hw<<16));
 		break;
 	case 2:	/* MOVZ */
 		if(sf)	/* 64-bit */
-			r = imm16 << (hw<<16);
+			r = (uvlong)imm16 << ((uvlong)hw<<16);
 		else
-			r = (ulong)(imm16 << (hw<<16));
+			r = (ulong)((uvlong)imm16 << ((uvlong)hw<<16));
 		break;
 	default:
 		undef(ir);
@@ -1640,6 +1640,12 @@ logsreg(ulong ir)
 			r = Xn | m;
 		else
 			r = Wn | m32;
+		break;
+	case 3:	/* ORN */
+		if(sf == 1)
+			r = Xn | ~m;
+		else
+			r = Wn | ~m32;
 		break;
 	case 4:	/* EOR */
 		if(sf == 1)
