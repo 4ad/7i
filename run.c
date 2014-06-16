@@ -405,16 +405,16 @@ decodebitmask(ulong N, ulong imms, ulong immr)
 	len = 0;
 	while(nimms >>= 1)
 		len++;
-	size = 1<<(len+1);
+	size = 1<<len;
 
 	levels = ((1<<len)-1)&0x3F;
 	S = imms & levels;
 	R = immr & levels;
-	welem = (1<<(S+1))-1;
-	rwelem = (welem >> R) | ((welem&((1<<(R+1))-1)) << (size-R));
+	welem = (1ULL<<(S+1))-1;
+	rwelem = (welem >> R) | ((welem&((1ULL<<(R+1))-1)) << (size-R));
 	wmask = 0LL;
 	for(i = 0; i+size <= 64; i += size)
-		wmask |= rwelem << size;
+		wmask |= rwelem << (uvlong)size;
 
 	return wmask;
 }
