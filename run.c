@@ -1957,9 +1957,9 @@ ldstregoff(ulong ir)
 		m = (Rm != 31)? reg.r[Rm] : 0;
 		addr = reg.r[Rn];
 		if(S)
-			addr += reg.r[m] << 2;
+			addr += m << 2;
 		else
-			addr += reg.r[m];
+			addr += m;
 		break;
 	}
 	switch(opc) {
@@ -2048,6 +2048,9 @@ ldstreguscaleimm(ulong ir)
 		switch(opc) {
 		case 0:	/* STUR */
 			putmem_w(addr, Wt);
+			break;
+		case 1:	/* LDUR */
+			r = getmem_w(addr);
 			break;
 		case 2:	/* LDURSW */
 			r = sext(getmem_w(addr), 32);
