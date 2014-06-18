@@ -413,9 +413,11 @@ decodebitmask(ulong N, ulong imms, ulong immr)
 	welem = (1ULL<<(S+1))-1;
 	rwelem = (welem >> R) | ((welem&((1ULL<<(R+1))-1)) << (size-R));
 	wmask = 0LL;
-	for(i = 0; i+size <= 64; i += size)
-		wmask |= rwelem << (uvlong)size;
+	for(i = 0; i < 64; i += size)
+		wmask |= rwelem << i;
 
+	if(trace)
+		print("dbm: S=%llux, R=%llux, levels=%llux, welem=%llux, rwelem=%llux, wmask=%llux nimms=%lux, len=%lux, size=%lux, i=%d\n", S, R, levels, welem, rwelem, wmask, nimms, len, size, i);
 	return wmask;
 }
 
@@ -1149,6 +1151,8 @@ logimm(ulong ir)
 		switch(opc) {
 		case 0:	/* AND */
 			r = Wn & imm;
+			if(trace)
+				print("logimm: AND: imm=%llux %lld %llud\n", imm, imm, imm);
 			break;
 		case 1:	/* ORR */
 			r = Wn | imm;

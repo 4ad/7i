@@ -8,15 +8,16 @@
 #define	prof profqi
 #define Percent(num, max)	(int)(((vlong)(num)*100)/(max))
 
-Inset *tables[] = { 0 };
+extern	Inst	itab[];
+Inst *tables[] = { itab, 0 };
 
 void
 isum(void)
 {
 	Inst *i;
-	int pct, j, k;
 	int total, loads, stores, arith, branch;
-	int taken, arm64reg, syscall, realarith, control;
+	int taken, powerreg, syscall, realarith, control;
+	int pct, j;
 
 	total = 0;
 	loads = 0;
@@ -24,35 +25,34 @@ isum(void)
 	arith = 0;
 	branch = 0;
 	taken = 0;
-	arm64reg = 0;
+	powerreg = 0;
 	syscall = 0;
 	realarith = 0;
 	control = 0;
 
 	/* Compute the total so we can have percentages */
-	for(j = 0; tables[j]; j++)
-		for(k = tables[j]->nel; --k >= 0;) {
-			i = &tables[j]->tab[k];
-			if(i->name && i->func)
-				total += i->count;
-		}
+	for(i = itab; i->func != undef; i++)
+		if(i->name && i->count)
+			total += i->count;
 
 	Bprint(bioout, "\nInstruction summary.\n\n");
 
 	for(j = 0; tables[j]; j++) {
-		for(k =tables[j]->nel; --k>=0; ) {
-			i = &tables[j]->tab[k];
-			if(i->name && i->func) {
+		for(i = tables[j]; i->func != undef; i++) {
+			if(i->name) {
+				/* This is gross */
 				if(i->count == 0)
 					continue;
 				pct = Percent(i->count, total);
 				if(pct != 0)
 					Bprint(bioout, "%-8ud %3d%% %s\n",
-					i->count, Percent(i->count, total), i->name);
+						i->count, Percent(i->count,
+						total), i->name);
 				else
 					Bprint(bioout, "%-8ud      %s\n",
-					i->count, i->name);
-	
+						i->count, i->name);
+
+
 				switch(i->type) {
 				default:
 					fatal(0, "isum bad stype %d\n", i->type);
@@ -71,7 +71,7 @@ isum(void)
 					taken += i->taken;
 					break;
 				case Ireg:
-					arm64reg += i->count;
+					powerreg += i->count;
 					break;
 				case Isyscall:
 					syscall += i->count;
@@ -83,50 +83,33 @@ isum(void)
 					arith += i->count;
 					i->count -= nopcount;
 					break;
+				case Isys:
 				case Icontrol:
 					control += i->count;
 					break;
 				}
+		
 			}
 		}
 	}
 
-	Bprint(bioout, "\n%-8ud      Memory cycles\n", loads+stores+total);
-
-	if(total == 0)
-		return;
-
+	Bprint(bioout, "\n%-8ud      Memory cycles\n", loads+stores+total);	
 	Bprint(bioout, "%-8ud %3d%% Instruction cycles\n",
-				total, Percent(total, loads+stores+total));
-
+			total, Percent(total, loads+stores+total));
 	Bprint(bioout, "%-8ud %3d%% Data cycles\n\n",
-				loads+stores, Percent(loads+stores, loads+stores+total));	
+			loads+stores, Percent(loads+stores, loads+stores+total));	
 
-	Bprint(bioout, "%-8ud %3d%% Stores\n", stores, Percent(stores, total));
+	Bprint(bioout, "%-8ud %3d%% Arithmetic\n",
+			arith, Percent(arith, total));
 
-	Bprint(bioout, "%-8ud %3d%% Loads\n", loads, Percent(loads, total));
+	Bprint(bioout, "%-8ud %3d%% System calls\n",
+			syscall, Percent(syscall, total));
 
-	Bprint(bioout, "   %-8ud Store stall\n", stores*2);
-
-	Bprint(bioout, "   %-8lud Load stall\n", loadlock);
-
-	Bprint(bioout, "%-8ud %3d%% Arithmetic\n", arith, Percent(arith, total));
-
-	Bprint(bioout, "%-8ud %3d%% Floating point\n",
-					realarith, Percent(realarith, total));
-
-	Bprint(bioout, "%-8ud %3d%% Arm64 special register load/stores\n",
-					arm64reg, Percent(arm64reg, total));
-
-	Bprint(bioout, "%-8ud %3d%% Arm64 control instructions\n",
-					control, Percent(control, total));
-
-	Bprint(bioout, "%-8ud %3d%% System calls\n", syscall, Percent(syscall, total));
-
-	Bprint(bioout, "%-8ud %3d%% Branches\n", branch, Percent(branch, total));
+	Bprint(bioout, "%-8ud %3d%% Branches\n",
+			branch, Percent(branch, total));
 
 	Bprint(bioout, "   %-8ud %3d%% Branches taken\n",
-					taken, Percent(taken, branch));
+			taken, Percent(taken, branch));
 }
 
 char *stype[] = { "Stack", "Text", "Data", "Bss" };
