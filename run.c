@@ -9,8 +9,8 @@ uvlong	decodebitmask(ulong, ulong, ulong);
 void	call(uvlong);
 void	ret(uvlong);
 char	runcond(ulong);
-Pstate	add32(ulong, ulong, ulong *);
-Pstate	add64(uvlong, uvlong, uvlong *);
+ulong	add32(ulong, ulong, ulong, Pstate *);
+uvlong	add64(uvlong, uvlong, uvlong, Pstate *);
 vlong	sext(ulong, char);
 vlong	doshift(ulong, vlong, ulong, ulong);
 vlong	shift64(vlong, ulong, ulong);
@@ -415,9 +415,6 @@ decodebitmask(ulong N, ulong imms, ulong immr)
 	wmask = 0LL;
 	for(i = 0; i < 64; i += size)
 		wmask |= rwelem << i;
-
-	if(trace)
-		print("dbm: S=%llux, R=%llux, levels=%llux, welem=%llux, rwelem=%llux, wmask=%llux nimms=%lux, len=%lux, size=%lux, i=%d\n", S, R, levels, welem, rwelem, wmask, nimms, len, size, i);
 	return wmask;
 }
 
@@ -485,34 +482,38 @@ runcond(ulong cond)
 	return r;
 }
 
-Pstate
-add32(ulong x, ulong y, ulong *r)
+ulong
+add32(ulong x, ulong y, ulong c, Pstate *p)
 {
-	Pstate p;
-	ulong usum;
+	uvlong uvsum;
 
-	usum = x + y;
-	p.N = usum >> 31;
-	p.Z = (usum == 0);
-	p.C = (usum < x) || (usum < y);
-	p.V = (x>>31 == y>>31) && (usum>>31 != x>>31);
-	*r = usum;
-	return p;
+	uvsum = (uvlong)x + (uvlong)y + (uvlong)c;
+	if(!p)
+		return uvsum;
+	p->N = (ulong)uvsum >> 31;
+	p->Z = ((ulong)uvsum == 0);
+	p->C = uvsum>>32 & 1;
+	p->V = (x>>31 == y>>31) && ((ulong)uvsum>>31 != x>>31);
+	return uvsum;
 }
 
-Pstate
-add64(uvlong x, uvlong y, uvlong *r)
+uvlong
+add64(uvlong x, uvlong y, uvlong c, Pstate *p)
 {
-	Pstate p;
-	uvlong usum;
+	uvlong uvsum, wocarry;
+	char carry;
 
-	usum = x + y;
-	p.N = usum >> 63;
-	p.Z = (usum == 0);
-	p.C = (usum < x) || (usum < y);
-	p.V = (x>>63 == y>>63) && (usum>>63 != x>>63);
-	*r = usum;
-	return p;
+	if(!p)
+		return x + y + c;
+	wocarry = x + y;
+	carry = (wocarry < x) || (wocarry < y);
+	uvsum = wocarry + c;
+	carry |= (uvsum < wocarry) || (uvsum < c);
+	p->C = carry;
+	p->V = (x>>63 == y>>63) && (uvsum>>63 != x>>63);
+	p->N = uvsum >> 63;
+	p->Z = (uvsum == 0);
+	return uvsum;
 }
 
 /* sext sign extends a bit-sized number encoded in v to a vlong. */
@@ -1001,7 +1002,7 @@ addsubimm(ulong ir)
 {
 	ulong sf, op, S, shift, imm12, Rn, Rd;
 	uvlong Xn, m, r;
-	ulong Wn, m32, r32;
+	ulong Wn, m32;
 	Pstate p;
 
 	getai(ir);
@@ -1017,21 +1018,20 @@ addsubimm(ulong ir)
 	case 0:	/* 32-bit */
 		switch(op) {
 		case 1: /* SUB, SUBS */
-			m32 = ~m32 + 1;
-			/* fallthrough */
+			r = (uvlong)add32(Wn, ~m32, 1ull, &p);
+			break;
 		case 0:	/* ADD, ADDS */
-			p = add32(Wn, m32, &r32);
-			r = r32;
+			r = (uvlong)add32(Wn, m32, 0ull, &p);
 			break;
 		}
 		break;
 	case 1:	/* 64-bit */
 		switch(op) {
 		case 1: /* SUB, SUBS */
-			m = ~m + 1;
-			/* fallthrough */
+			r = add64(Xn, ~m, 1ull, &p);
+			break;
 		case 0:	/* ADD, ADDS */
-			p = add64(Xn, m, &r);
+			r = add64(Xn, m, 0ull, &p);
 			break;
 		}
 		break;
@@ -1303,7 +1303,7 @@ addsubsreg(ulong ir)
 {
 	ulong sf, op, S, shift, Rm, imm6, Rn, Rd;
 	uvlong Xn, Xm, m, r;
-	ulong Wn, m32, r32;
+	ulong Wn, m32;
 	Pstate p;
 
 	getasr(ir);
@@ -1323,21 +1323,20 @@ addsubsreg(ulong ir)
 	case 0:	/* 32-bit */
 		switch(op) {
 		case 1: /* SUB, SUBS */
-			m32 = ~m32 + 1;
-			/* fallthrough */
+			r = (uvlong)add32(Wn, ~m32, 1ull, &p);
+			break;
 		case 0:	/* ADD, ADDS */
-			p = add32(Wn, m32, &r32);
-			r = r32;
+			r = (uvlong)add32(Wn, m32, 0ull, &p);
 			break;
 		}
 		break;
 	case 1:	/* 64-bit */
 		switch(op) {
 		case 1: /* SUB, SUBS */
-			m = ~m + 1;
-			/* fallthrough */
+			r = add64(Xn, ~m, 1ull, &p);
+			break;
 		case 0:	/* ADD, ADDS */
-			p = add64(Xn, m, &r);
+			r = add64(Xn, m, 0ull, &p);
 			break;
 		}
 		break;
