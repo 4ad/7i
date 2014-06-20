@@ -237,7 +237,7 @@ sysopen(void)
 {
 	char file[1024];
 	int n;
-	ulong mode, name;
+	uvlong mode, name;
 
 	name = getmem_v(reg.r[REGSP]+8);
 	mode = getmem_w(reg.r[REGSP]+16);
