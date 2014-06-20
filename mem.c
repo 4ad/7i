@@ -172,8 +172,8 @@ putmem_h(uvlong addr, short data)
 
 	va = vaddr(addr);
 	va += addr&(BY2PG-1);
-	va[0] = data>>8;
-	va[1] = data;
+	va[1] = data>>8;
+	va[0] = data;
 	if(membpt)
 		brkchk(addr, Write);
 }
