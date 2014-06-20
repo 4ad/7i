@@ -1068,27 +1068,27 @@ bitfield(ulong ir)
 	getab(ir);
 	USED(N);
 	if(imms >= immr) {	/* shift right */
-		src = ((uvlong)reg.r[Rn]>>immr)&((1LL<<(imms-immr+1))-1);
+		src = ((uvlong)reg.r[Rn]>>immr)&((1ull<<(imms-immr+1))-1ull);
 		switch(opc) {
 		case 0: /* SBFM */
-			reg.r[Rd] = sext(src, imms - immr);
+			reg.r[Rd] = sext(src, imms - immr + 1);
 			break;
 		case 1:	/* BFM */
-			reg.r[Rd] = (reg.r[Rd]&~((1LL<<(imms-immr+1))-1)) | src;
+			reg.r[Rd] = (reg.r[Rd]&~((1ull<<(imms-immr+1))-1ull)) | src;
 			break;
 		case 2:	/* UBFM */
 			reg.r[Rd] = src;
 			break;
 		}
 	} else {	/* shift left */
-		src = reg.r[Rn]&((1LL<<(imms+1))-1);
+		src = reg.r[Rn]&((1ull<<(imms+1))-1ull);
 		bits = sf ? 64 : 32;
 		switch(opc) {
 		case 0: /* SBFM */
-			reg.r[Rd] = sext(src, imms) << (bits-immr);
+			reg.r[Rd] = sext(src, imms + 1) << (bits-immr);
 			break;
 		case 1:	/* BFM */
-			reg.r[Rd] = (reg.r[Rd]&~((1LL<<(bits-immr+imms+1))-1)) | (src << (bits-immr));
+			reg.r[Rd] = (reg.r[Rd]&~((1ull<<(bits-immr+imms+1))-1ull)) | (src << (bits-immr));
 			break;
 		case 2:	/* UBFM */
 			reg.r[Rd] = src << (bits-immr);
@@ -1255,7 +1255,7 @@ pcrel(ulong ir)
 	if(op)
 		imm = sext(immhi<<14 | immlo<<12, 33);
 	else
-		imm = sext(immhi<<2 | immlo, 21);
+		imm = sext(immhi<<2 | immlo, 20);
 	if(Rd != 31)
 		reg.r[Rd] = reg.pc + imm;
 	if(trace)
